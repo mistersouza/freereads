@@ -7,7 +7,9 @@ export const ENV = {
     PORT: process.env.PORT || 5500,
     MONGODB_URI: process.env.MONGODB_URI,
     GOOGLE_CREDENTIALS: process.env.GOOGLE_CREDENTIALS,
-    CORS_ORIGIN: process.env.CORS_ORIGIN || '*'
+    CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
+    JWT_SECRET: process.env.JWT_SECRET,
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
 };
 
 /**
@@ -16,6 +18,7 @@ export const ENV = {
 const requiredEnvVariables = [
     'MONGODB_URI',
     'GOOGLE_CREDENTIALS',
+    'JWT_SECRET',
 ];
 
 for (const envVariable of requiredEnvVariables) {
