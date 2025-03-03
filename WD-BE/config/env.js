@@ -9,8 +9,12 @@ export const ENV = {
     GOOGLE_CREDENTIALS: process.env.GOOGLE_CREDENTIALS,
 };
 
+/**
+ * If any of these variables are missing, an error will be thrown.
+ */
 const requiredEnvVariables = [
     'MONGODB_URI',
+    'GOOGLE_CREDENTIALS',
 ];
 
 for (const envVariable of requiredEnvVariables) {
