@@ -7,6 +7,7 @@ export const ENV = {
     PORT: process.env.PORT || 5500,
     MONGODB_URI: process.env.MONGODB_URI,
     GOOGLE_CREDENTIALS: process.env.GOOGLE_CREDENTIALS,
+    CORS_ORIGIN: process.env.CORS_ORIGIN || '*'
 };
 
 /**
