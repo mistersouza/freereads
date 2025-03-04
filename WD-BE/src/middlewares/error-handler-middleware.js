@@ -1,3 +1,4 @@
+import ApiError from '../errors/api-error.js';
 import errorResponseHandler from "./error-response-middleware.js";
 import { setError } from "../helpers/error-helper.js";
 
@@ -10,7 +11,7 @@ const errorHandler = (ERROR_MESSAGES = {}) => {
    const {
         CAST_ERROR = "Hmm… this ID seems off. It doesn't match any records",
         NOT_FOUND = "404 vibes—this one's gone missing!",
-        SERVER_ERROR = "Bookkeeper's out! Please knock again later."
+        SERVER_ERROR = "Bookkeeper's out! Please knock again later.",
         INVALID_TOKEN = "Token trouble! It's off.",
         EXPIRED_TOKEN = "Token's expired. Time for a fresh one!"
     } = ERROR_MESSAGES;
@@ -58,7 +59,7 @@ const errorHandler = (ERROR_MESSAGES = {}) => {
 
         // Handle server errors
         if (error.statusCode > 499) {
-            setError(error, 500, 'error', SERVER_ERROR);
+            setError(error, error.statusCode, 'error', SERVER_ERROR);
         }
 
         // Let the error response handler take care of sending the response
