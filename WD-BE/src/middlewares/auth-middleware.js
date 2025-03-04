@@ -21,7 +21,7 @@ const authorize = (roles = ['boss', 'overlord']) => async (request, response, ne
                 const requestedUser = await User.findById(id);
 
                 if (!requestedUser) {
-                    error = new ApiError(AUTH_ERRORS.USER_NOT_FOUND, 404);
+                    error = new ApiError(AUTH_ERRORS.NOT_FOUND, 404);
                 }
 
                 if (!roles.includes(decoded.role) && decoded.id !== id) {
