@@ -5,6 +5,7 @@ import morgan from 'morgan';
 
 import { ENV } from './config/env.js';
 import { corsOptions } from './config/cors.js';
+import { swaggerDocs } from './config/swagger.js';
 import connectDB from './config/db.js';
 
 import scanBookRouter from './routes/scan-router.js';
@@ -17,7 +18,10 @@ app.use(cors(corsOptions));
 // Enable body parsing
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+// Enable Swagger docs
+swaggerDocs(app);
 
+// Connect to the database
 connectDB();
 
 // Routes

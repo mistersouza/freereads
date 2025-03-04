@@ -1,5 +1,39 @@
 import { scanForISBN, fetchBookDetails } from '../utils/book-scanner-service.js';
 import ApiError from '../errors/api-error.js';
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     BookScanRequest:
+ *       type: object
+ *       required:
+ *         - imageUrl
+ *       properties:
+ *         imageUrl:
+ *           type: string
+ *           description: URL of the book cover image to scan
+ *           example: "https://example.com/book-cover.jpg"
+ *     BookDetails:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: Book title
+ *         author:
+ *           type: string
+ *           description: Book author
+ *         isbn:
+ *           type: string
+ *           description: ISBN number
+ *         coverImage:
+ *           type: string
+ *           description: URL to the book cover
+ *         description:
+ *           type: string
+ *           description: Book description
+ */
+
 /**
  * Scans an image for an ISBN and fetches book details.
  * @param {Object} req - The request object.
