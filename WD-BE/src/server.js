@@ -9,6 +9,7 @@ import { swaggerDocs } from './config/swagger.js';
 import connectDB from './config/db.js';
 
 import scanBookRouter from './routes/scan-router.js';
+import authRouter from './routes/auth-router.js';
 
 const app = express();
 // Enable request logging
@@ -26,6 +27,7 @@ connectDB();
 
 // Routes
 app.use('/api/v1', scanBookRouter);
+app.use('/api/v1/auth', authRouter);
 
 app.listen(ENV.PORT, () => {
   console.log(`🔓 Doors to the freereads are open on port ${ENV.PORT}`);
