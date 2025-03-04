@@ -18,6 +18,9 @@ app.use(express.json());
 
 connectDB();
 
+// Routes
+app.use('/api/v1', scanBookRouter);
+
 app.listen(ENV.PORT, () => {
   console.log(`🔓 Doors to the freereads are open on port ${ENV.PORT}`);
 });
