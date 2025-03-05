@@ -1,6 +1,7 @@
 import ApiError from '../errors/api-error.js';
 import errorResponseHandler from "./error-response-middleware.js";
 import { setError } from "../helpers/error-helper.js";
+import { DEFAULT_ERROR_MESSAGES } from '../constants/error-messages.js';
 
 /**
  * Creates a middleware function for handling various error types.
@@ -9,11 +10,11 @@ import { setError } from "../helpers/error-helper.js";
  */
 const errorHandler = (ERROR_MESSAGES = {}) => {
    const {
-        CAST_ERROR = "Hmm… this ID seems off. It doesn't match any records",
-        NOT_FOUND = "404 vibes—this one's gone missing!",
-        SERVER_ERROR = "Bookkeeper's out! Please knock again later.",
-        INVALID_TOKEN = "Token trouble! It's off.",
-        EXPIRED_TOKEN = "Token's expired. Time for a fresh one!"
+        CAST_ERROR = DEFAULT_ERROR_MESSAGES.CAST_ERROR,
+        NOT_FOUND = DEFAULT_ERROR_MESSAGES.NOT_FOUND,
+        SERVER_ERROR = DEFAULT_ERROR_MESSAGES.SERVER_ERROR,
+        INVALID_TOKEN = DEFAULT_ERROR_MESSAGES.INVALID_TOKEN,
+        EXPIRED_TOKEN = DEFAULT_ERROR_MESSAGES.EXPIRED_TOKEN
     } = ERROR_MESSAGES;
 
 

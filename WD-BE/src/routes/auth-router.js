@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import errorHandler from '../middlewares/error-handler-middleware.js';
+import { AUTH_ERROR_MESSAGES } from '../constants/error-messages.js';
 import { register, login } from '../controllers/auth-controller.js';
 
 /**
@@ -129,6 +130,6 @@ router.post('/login', login);
  * @function
  * @returns {Function} Express middleware function for error handling
  */
-router.use(errorHandler());
+router.use(errorHandler(AUTH_ERROR_MESSAGES));
 
 export default router;
