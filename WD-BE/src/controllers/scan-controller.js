@@ -19,28 +19,97 @@ import ApiError from '../errors/api-error.js';
  *       properties:
  *         title:
  *           type: string
- *           description: Book title
+ *           description: Title of the book
  *         author:
  *           type: string
- *           description: Book author
+ *           description: Author of the book
  *         isbn:
  *           type: string
- *           description: ISBN number
- *         coverImage:
+ *           description: ISBN of the book
+ *         publisher:
  *           type: string
- *           description: URL to the book cover
+ *           description: Publisher of the book
+ *         publishedDate:
+ *           type: string
+ *           description: Publication date
  *         description:
  *           type: string
  *           description: Book description
+ *         pageCount:
+ *           type: integer
+ *           description: Number of pages in the book
+ *         categories:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Book categories/genres
+ *         imageLinks:
+ *           type: object
+ *           properties:
+ *             thumbnail:
+ *               type: string
+ *               description: URL to book cover thumbnail
+ *       example:
+ *         title: "The Great Gatsby"
+ *         author: "F. Scott Fitzgerald"
+ *         isbn: "9780743273565"
+ *         publisher: "Scribner"
+ *         publishedDate: "2004-09-30"
+ *         description: "The Great Gatsby is a 1925 novel by American writer F. Scott Fitzgerald."
+ *         pageCount: 180
+ *         categories: ["Fiction", "Classics"]
+ *         imageLinks:
+ *           thumbnail: "http://books.google.com/books/content?id=iXn5U2IzVH0C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
  */
 
 /**
- * Scans an image for an ISBN and fetches book details.
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {Function} next - The next middleware function.
- * @returns {Promise<void>} - A promise that resolves when the scan is complete.
- * @throws {ApiError} - If the scan fails.
+ * @swagger
+ * /api/v1/books/scan:
+ *   post:
+ *     summary: Scan a book
+ *     description: Endpoint to scan book information from an image URL. The image is processed to detect an ISBN, which is then used to fetch book details.
+ *     tags: [Books]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/BookScanRequest'
+ *     responses:
+ *       200:
+ *         description: Book successfully scanned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BookDetails'
+ *       400:
+ *         description: Invalid request - Missing image
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
+ *                   example: "Book cover missing! Try scanning again."
+ *       404:
+ *         description: Book not found or ISBN not detected
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
+ *                   example: "Oops! We couldn't quite get what need. Try scanning another image."
+ *       500:
+ *         description: Server error
  */
 const scanBook = async (req, res, next) => {
     const { imageUrl } = req.body;

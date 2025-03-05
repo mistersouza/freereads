@@ -1,17 +1,18 @@
 import express from 'express';
+import { getUsers, getUser, createUser, updateUser, deleteUser } from '../controllers/user-controller.js';
 import { normalizeError } from '../middlewares/error-handler-middleware.js';
 import { authorizeAccess } from '../middlewares/auth-middleware.js';
-import {
-    getUsers,
-    getUser,
-    createUser,
-    updateUser,
-    deleteUser
-} from '../controllers/user-controller.js';
+
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management API (v1)
+ */
 
 const router = express.Router();
 
-// Handle routes access
+// Apply authorization middleware to all routes in this router
 router.use(authorizeAccess());
 
 // Routes
@@ -24,7 +25,7 @@ router.route('/:id')
     .put(updateUser)
     .delete(deleteUser);
 
-// Handle errors
+// Error handling middleware
 router.use(normalizeError());
 
 export default router;
