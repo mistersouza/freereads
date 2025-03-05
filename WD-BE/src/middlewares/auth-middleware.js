@@ -1,5 +1,5 @@
 import { verifyToken } from '../utils/jwt-handler.js';
-import User from '../models/User.js';
+import User from '../models/user-model.js';
 import ApiError from '../errors/api-error.js';
 import {
     AUTH_ERROR_MESSAGES,
