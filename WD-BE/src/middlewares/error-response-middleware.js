@@ -7,7 +7,7 @@ import { ENV } from '../config/env.js';
  * @param {Object} response - The response object.
  * @returns {Object} - The response object.
  */
-const errorResponseHandler = (error, request, response) => {
+const formatErrorResponse = (error, request, response) => {
     try {
         response.status(error.statusCode).json({
         status: error.status,
@@ -25,4 +25,4 @@ const errorResponseHandler = (error, request, response) => {
     console.error(`[ERROR] ${error.statusCode} - ${error.message}`, error);
 }
 
-export default errorResponseHandler;
+export { formatErrorResponse };
