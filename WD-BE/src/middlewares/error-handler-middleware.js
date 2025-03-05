@@ -1,10 +1,12 @@
 import ApiError from '../errors/api-error.js';
 import { formatErrorResponse } from "./error-response-middleware.js";
 import { setError } from "../helpers/error-helper.js";
-import { DEFAULT_ERROR_MESSAGES } from '../constants/error-messages.js';
+import { DEFAULT_ERROR_MESSAGES, JWT_ERROR_MESSAGES } from '../constants/error-messages.js';
 
 /**
  * Creates a middleware function for handling various error types.
+ * Accepts custom error messages that override defaults when provided.
+ * 
  * @param {Object} ERROR_MESSAGES - Custom error messages for different error types
  * @returns {Function} Express error handling middleware function
  */
@@ -13,13 +15,14 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
         CAST_ERROR = DEFAULT_ERROR_MESSAGES.CAST_ERROR,
         NOT_FOUND = DEFAULT_ERROR_MESSAGES.NOT_FOUND,
         SERVER_ERROR = DEFAULT_ERROR_MESSAGES.SERVER_ERROR,
-        INVALID_TOKEN = DEFAULT_ERROR_MESSAGES.INVALID_TOKEN,
-        EXPIRED_TOKEN = DEFAULT_ERROR_MESSAGES.EXPIRED_TOKEN
+        INVALID_TOKEN = JWT_ERROR_MESSAGES.INVALID_TOKEN,
+        EXPIRED_TOKEN = JWT_ERROR_MESSAGES.EXPIRED_TOKEN
     } = ERROR_MESSAGES;
 
 
     /**
      * Express error handling middleware
+     * Normalizes different error types into a consistent format for client responses
      * 
      * @param {Error} error - Error object thrown in the application
      * @param {Object} request - Express request object
