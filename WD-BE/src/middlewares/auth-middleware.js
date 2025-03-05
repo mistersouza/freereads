@@ -3,7 +3,7 @@ import User from '../models/User.js';
 import ApiError from '../errors/api-error.js';
 import { AUTH_ERROR_MESSAGES } from '../constants/error-messages.js';
 
-const authorize = (roles = ['boss', 'overlord']) => async (request, response, next) => {
+const authorizeAccess = (roles = ['boss', 'overlord']) => async (request, response, next) => {
     if (!request.headers.authorization?.startsWith('Bearer ')) {
         return next(new ApiError(AUTH_ERROR_MESSAGES.TOKEN_MISSING, 401))
     }
@@ -38,5 +38,4 @@ const authorize = (roles = ['boss', 'overlord']) => async (request, response, ne
     }
 };
 
-export default authorize;
-
+export { authorizeAccess };
