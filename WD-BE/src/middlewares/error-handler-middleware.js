@@ -1,5 +1,5 @@
 import ApiError from '../errors/api-error.js';
-import errorResponseHandler from "./error-response-middleware.js";
+import { formatErrorResponse } from "./error-response-middleware.js";
 import { setError } from "../helpers/error-helper.js";
 import { DEFAULT_ERROR_MESSAGES } from '../constants/error-messages.js';
 
@@ -8,7 +8,7 @@ import { DEFAULT_ERROR_MESSAGES } from '../constants/error-messages.js';
  * @param {Object} ERROR_MESSAGES - Custom error messages for different error types
  * @returns {Function} Express error handling middleware function
  */
-const errorHandler = (ERROR_MESSAGES = {}) => {
+const normalizeError = (ERROR_MESSAGES = {}) => {
    const {
         CAST_ERROR = DEFAULT_ERROR_MESSAGES.CAST_ERROR,
         NOT_FOUND = DEFAULT_ERROR_MESSAGES.NOT_FOUND,
@@ -64,8 +64,8 @@ const errorHandler = (ERROR_MESSAGES = {}) => {
         }
 
         // Let the error response handler take care of sending the response
-        errorResponseHandler(error, request, response);
+        formatErrorResponse(error, request, response);
     }
 };
 
-export default errorHandler;
+export { normalizeError };

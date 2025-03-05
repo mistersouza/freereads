@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import ApiError from '../errors/api-error.js';
-import User from '../models/User.js';
+import User from '../models/user-model.js';
 import { ENV } from '../config/env.js';
 import { AUTH_ERROR_MESSAGES } from '../constants/error-messages.js';
 import { generateToken } from '../utils/jwt-handler.js';
