@@ -7,7 +7,7 @@ const options = {
     info: {
       title: 'FreeReads API',
       version: '1.0.0',
-      description: 'API documentation for FreeReads application',
+      description: 'FreeReads API Documentation',
       contact: {
         name: 'API Support',
         url: 'https://github.com/mistersouza/freereads'
@@ -17,7 +17,7 @@ const options = {
       {
         url: process.env.NODE_ENV === 'production' 
           ? 'https://api.freereads.com' 
-          : process.env.PORT || 'http://localhost:5500',
+          : process.env.PORT || 'http://localhost:5000/api/v1',
         description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
       }
     ]
