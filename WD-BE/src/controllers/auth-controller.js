@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import ApiError from '../errors/api-error.js';
 import User from '../models/User.js';
 import { ENV } from '../config/env.js';
-
+import { AUTH_ERROR_MESSAGES } from '../constants/error-messages.js';
 import { generateToken } from '../utils/jwt-handler.js';
 
 /**
@@ -135,7 +135,7 @@ const register = async (request, response, next) => {
         const activeAccount = await User.findOne({ email });
         if (activeAccount) {
             throw new ApiError(
-                'We’ve seen you before! Try logging in instead.',
+                AUTH_ERROR_MESSAGES.EMAIL_IN_USE,
                 409
             );
         }
@@ -150,10 +150,11 @@ const register = async (request, response, next) => {
 
         response.status(201).json({
             token: generateToken(user),
-            user: { email, role }
+            user: { email: user.email, role: user.role }
         });
     } catch (error) {
         session.abortTransaction();
+        session.endSession();
         next(error);
     }
 };
@@ -233,14 +234,14 @@ const login = async (request, response, next) => {
         const user = await User.findOne({ email }).select('+hashedPassword');
         if (!user) {
             throw new ApiError(
-                'No luck! That user\’s off the grid. Try registering instead.',
+                AUTH_ERROR_MESSAGES.UNKNOWN_USER,
                 404
             );
         }
 
         if (!await user.comparePassword(password)) {
             throw new ApiError(
-                "Something’s off with that email or password. Give it another go!",
+                AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS,
                 401
             );
         }
