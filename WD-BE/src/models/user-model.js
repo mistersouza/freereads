@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";;
+import bcrypt from "bcryptjs";
 
 /**
  * @swagger
@@ -17,6 +17,9 @@ import bcrypt from "bcryptjs";;
  *           type: string
  *           description: User's email address
  *           unique: true
+ *         hashedPassword:
+ *           type: string
+ *           description: Hashed version of user's password (never returned in responses)
  *         role:
  *           type: string
  *           enum: [member, boss, overlord]
