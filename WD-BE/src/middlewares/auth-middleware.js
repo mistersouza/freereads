@@ -1,11 +1,21 @@
 import { verifyToken } from '../utils/jwt-handler.js';
 import User from '../models/User.js';
 import ApiError from '../errors/api-error.js';
-import { AUTH_ERROR_MESSAGES } from '../constants/error-messages.js';
+import {
+    AUTH_ERROR_MESSAGES,
+    USER_ERROR_MESSAGES,
+    JWT_ERROR_MESSAGES
+} from '../constants/error-messages.js';
 
+/**
+ * Creates middleware for authorizing access based on user roles or self-identification.
+ * 
+ * @param {Array} roles - Array of roles that have authorized access (defaults to admin roles)
+ * @returns {Function} Express middleware function that handles authorization
+ */
 const authorizeAccess = (roles = ['boss', 'overlord']) => async (request, response, next) => {
     if (!request.headers.authorization?.startsWith('Bearer ')) {
-        return next(new ApiError(AUTH_ERROR_MESSAGES.TOKEN_MISSING, 401))
+        return next(new ApiError(JWT_ERROR_MESSAGES.TOKEN_MISSING, 401))
     }
 
     const token = request.headers.authorization.split(' ')[1];
@@ -25,7 +35,7 @@ const authorizeAccess = (roles = ['boss', 'overlord']) => async (request, respon
 
         const requestedUser = await User.findById(id);
         if (!requestedUser) {
-            return next(new ApiError(AUTH_ERROR_MESSAGES.USER_NOT_FOUND, 404));
+            return next(new ApiError(USER_ERROR_MESSAGES.USER_NOT_FOUND, 404));
         }
  
         if (!isAuthorized && !isSelf) {
