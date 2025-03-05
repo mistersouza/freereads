@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 import ApiError from '../errors/api-error.js';
 import User from '../models/user-model.js';
 import { ENV } from '../config/env.js';
@@ -9,44 +8,6 @@ import { generateToken } from '../utils/jwt-handler.js';
 /**
  * @swagger
  * components:
- *   schemas:
- *     User:
- *       type: object
- *       required:
- *         - email
- *       properties:
- *         _id:
- *           type: string
- *           description: Auto-generated MongoDB ID
- *         email:
- *           type: string
- *           description: User's email address
- *           unique: true
- *         role:
- *           type: string
- *           enum: [member, boss, overlord]
- *           default: member
- *           description: User's role in the system
- *         books:
- *           type: array
- *           items:
- *             type: string
- *           description: Book IDs associated with this user
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: When the user was created
- *         updatedAt:
- *           type: string
- *           format: date-time
- *           description: When the user was last updated
- *       example:
- *         _id: "60d21b4667d0d8992e610c85"
- *         email: "user@example.com"
- *         role: "member"
- *         books: ["60d21b4667d0d8992e610c86"]
- *         createdAt: "2023-01-01T00:00:00.000Z"
- *         updatedAt: "2023-01-01T00:00:00.000Z"
  *   securitySchemes:
  *     bearerAuth:
  *       type: http
@@ -107,23 +68,6 @@ import { generateToken } from '../utils/jwt-handler.js';
  *         description: Email already exists
  *       500:
  *         description: Server error
- */
-
-/**
- * Registers a new user in the system with email, password, and optional role
- * Uses MongoDB transactions to ensure data integrity during the registration process
- * 
- * @async
- * @function register
- * @param {Object} request - Express request object
- * @param {Object} request.body - Request body containing user information
- * @param {string} request.body.email - User's email address
- * @param {string} request.body.password - User's plain text password (will be hashed)
- * @param {string} [request.body.role='member'] - User's role in the system
- * @param {Object} response - Express response object
- * @param {Function} next - Express next middleware function
- * @returns {Promise<void>} - Resolves when registration is complete
- * @throws {ApiError} - Throws 409 error if email already exists
  */
 const register = async (request, response, next) => {
     const session = await mongoose.startSession();
@@ -211,22 +155,6 @@ const register = async (request, response, next) => {
  *       500:
  *         description: Server error
  */
-
-/**
- * Authenticates a user using email and password credentials
- * Returns a JWT token upon successful authentication
- * 
- * @async
- * @function login
- * @param {Object} request - Express request object
- * @param {Object} request.body - Request body containing login credentials
- * @param {string} request.body.email - User's email address
- * @param {string} request.body.password - User's password
- * @param {Object} response - Express response object
- * @param {Function} next - Express next middleware function
- * @returns {Promise<void>} - Resolves when authentication is complete
- * @throws {ApiError} - Throws 404 error if user not found or 401 if password incorrect
- */
 const login = async (request, response, next) => {
     const { email, password } = request.body;
 
@@ -252,7 +180,6 @@ const login = async (request, response, next) => {
         });
     } catch (error) {
         next(error);
-        
     }
 };
 
