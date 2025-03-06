@@ -1,5 +1,7 @@
 import express from 'express';
 import { scanBook } from '../controllers/scan-controller.js';
+import { normalizeError } from '../middlewares/error-handler-middleware.js';
+import { SCAN_ERROR_MESSAGES } from '../constants/error-messages.js';
 
 /**
  * @swagger
@@ -10,6 +12,9 @@ import { scanBook } from '../controllers/scan-controller.js';
 
 const router = express.Router();
 
-router.post('/books/scan', scanBook);
+router.post('/scan', scanBook);
+
+// Error handling middleware
+router.use(normalizeError(SCAN_ERROR_MESSAGES));
 
 export default router;

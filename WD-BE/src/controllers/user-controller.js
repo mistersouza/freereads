@@ -1,6 +1,5 @@
 import User from '../models/user-model.js';
 import controllerFactory from '../utils/controller-factory.js';
-import { USER_ERROR_MESSAGES } from '../constants/error-messages.js';
 
 /**
  * @swagger
@@ -241,6 +240,6 @@ const {
   createOne: createUser,
   updateOne: updateUser,
   deleteOne: deleteUser
-} = controllerFactory(User, USER_ERROR_MESSAGES.USER_NOT_FOUND);
+} = controllerFactory(User, 'users');
 
 export { getUsers, getUser, createUser, updateUser, deleteUser };
