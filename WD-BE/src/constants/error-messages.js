@@ -1,5 +1,11 @@
 /**
+ * @fileoverview Centralized error messages for consistent user-friendly errors.
+ * Each category contains domain-specific error messages with friendly, conversational tone.
+ */
+
+/**
  * Default error messages for common error scenarios across the application.
+ * @type {Object.<string, string>}
  */
 const DEFAULT_ERROR_MESSAGES = {
     CAST_ERROR: 'Hmm… this ID seems off. It doesn\'t match any records',
@@ -9,32 +15,35 @@ const DEFAULT_ERROR_MESSAGES = {
 
 /**
  * Authentication and authorization error messages
+ * @type {Object.<number|string, string>}
  */
 const AUTH_ERROR_MESSAGES = {
-    EMAIL_IN_USE: 'We\'ve seen you before! Try logging in instead.',
-    UNKNOWN_USER: 'No luck! That username\'s off the grid. Try registering instead.',
-    INVALID_CREDENTIALS: 'Something\'s off with that email or password. Give it another go!',
-    ACCESS_DENIED: 'Hold up! You\'re not cleared for this.'
-};
-
-/**
- * JSON Web Tokens error messages
- */
-const JWT_ERROR_MESSAGES = {
-    TOKEN_MISSING: 'Token\'s ghosted. Time for a new one!',
-    EXPIRED_TOKEN: 'Token\'s expired. Time for a fresh one!',
-    INVALID_TOKEN: 'Token trouble! It\'s off.',
+    401: 'Something\'s off with that email or password. Give it another go!',
+    403: 'Hold up! You\'re not cleared for this.',
+    404: 'No luck! That username\'s off the grid. Try registering instead.',
+    409: 'We\'ve seen you before! Try logging in instead.'
 };
 
 /**
  * User error messages
+ * @type {Object.<number|string, string>}
  */
 const USER_ERROR_MESSAGES = {
-    USER_NOT_FOUND: 'We looked everywhere, but that user\'s MIA',
+    404: 'We looked everywhere, but that user\'s MIA',
+};
+
+/**
+ * Scanning error messages
+ * @type {Object.<number|string, string>}
+ */
+const SCAN_ERROR_MESSAGES = {
+    400: 'Book cover missing! Try scanning again.',
+    404: 'Oops! We couldn\'t find that book. Do you wanna try again?',
+    422: 'Oops! We couldn\'t quite get what need. Try scanning another image.',
 };
 
 export { 
     DEFAULT_ERROR_MESSAGES,
     AUTH_ERROR_MESSAGES,
-    JWT_ERROR_MESSAGES,
+    SCAN_ERROR_MESSAGES,
     USER_ERROR_MESSAGES };
