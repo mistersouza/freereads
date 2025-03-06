@@ -1,8 +1,6 @@
-import ApiError from '../errors/api-error.js';
-import JwtError from '../errors/jwt-error.js';
+import { ApiError, JwtError, setError } from '../errors/index.js';
 import { formatErrorResponse } from "./error-response-middleware.js";
-import { setError } from '../utils/error-context.js';
-import { DEFAULT_ERROR_MESSAGES } from '../constants/error-messages.js';
+import { DEFAULT_ERROR_MESSAGES } from '../errors/index.js';
 
 /**
  * Creates a middleware function for handling various error types.
