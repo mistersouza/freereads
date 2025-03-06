@@ -1,6 +1,6 @@
 import { scanForISBN, fetchBookDetails } from '../utils/book-scanner-service.js';
 import ApiError from '../errors/api-error.js';
-import { getResourceName } from '../helpers/error-context.js';
+import { getResourceName } from '../errors/index.js';
 
 /**
  * @swagger

@@ -1,7 +1,6 @@
 import { verifyToken } from '../utils/jwt-handler.js';
-import ApiError from '../errors/api-error.js';
-import JwtError from '../errors/jwt-error.js';
-import { getResourceName } from '../helpers/error-context.js';
+import { ApiError, JwtError } from '../errors/index.js';
+import { getResourceName } from '../errors/index.js';
 
 /**
  * Creates middleware for authorizing access based on user roles or resource ownership.

@@ -1,7 +1,7 @@
 import express from 'express';
 import { normalizeError } from '../middlewares/error-handler-middleware.js';
 import { authorizeAccess } from '../middlewares/auth-middleware.js';
-import { USER_ERROR_MESSAGES } from '../constants/error-messages.js';
+import { USER_ERROR_MESSAGES } from '../errors/index.js';
 import {
     getUsers,
     getUser,

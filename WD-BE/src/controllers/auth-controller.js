@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
-import ApiError from '../errors/api-error.js';
 import User from '../models/user-model.js';
+import { ApiError, getResourceName } from '../errors/index.js';
 import { generateToken } from '../utils/jwt-handler.js';
-import { getResourceName } from '../helpers/error-context.js';
 
 /**
  * @swagger
