@@ -29,7 +29,15 @@ const AUTH_ERROR_MESSAGES = {
  * @type {Object.<number|string, string>}
  */
 const USER_ERROR_MESSAGES = {
-    404: 'We looked everywhere, but that user\'s MIA',
+    404: 'This book seems to have vanished from our shelves!',
+};
+
+/**
+ * Book error messages
+ * @type {Object.<number|string, string>}
+ */
+const BOOK_ERROR_MESSAGES = {
+    404: 'This book seems to have vanished from our shelves!',
 };
 
 /**
@@ -46,4 +54,5 @@ export {
     DEFAULT_ERROR_MESSAGES,
     AUTH_ERROR_MESSAGES,
     SCAN_ERROR_MESSAGES,
-    USER_ERROR_MESSAGES };
+    USER_ERROR_MESSAGES,
+    BOOK_ERROR_MESSAGES,};

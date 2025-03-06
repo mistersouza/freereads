@@ -11,6 +11,7 @@ import connectDB from './config/db.js';
 import scanBookRouter from './routes/scan-router.js';
 import authRouter from './routes/auth-router.js';
 import userRouter from './routes/user-router.js';
+import bookRouter from './routes/book-router.js';
 
 const app = express();
 // Enable request logging
@@ -30,6 +31,7 @@ connectDB();
 app.use('/api/v1', scanBookRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/books', bookRouter);
 
 app.listen(ENV.PORT, () => {
   console.log(`🔓 Doors to the freereads are open on port ${ENV.PORT}`);
