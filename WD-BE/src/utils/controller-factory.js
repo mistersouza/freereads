@@ -6,7 +6,7 @@ import ApiError from '../errors/api-error.js';
  * @param {String} notFoundMessage - Specific not found message for this resource
  * @returns {Object} Object containing controller handlers
  */
-const controllerFactory = (Model, notFoundMessage) => {
+const controllerFactory = (Model, resourceName) => {
   return {
     /**
      * Gets all resources
@@ -29,7 +29,7 @@ const controllerFactory = (Model, notFoundMessage) => {
         const data = await Model.findById(id);
         
         if (!data) {
-          throw new ApiError(notFoundMessage, 404);
+          throw new ApiError(404, resourceName);
         }
         
         response.status(200).json(data);
@@ -62,7 +62,7 @@ const controllerFactory = (Model, notFoundMessage) => {
         });
         
         if (!data) {
-          throw new ApiError(notFoundMessage, 404);
+          throw new ApiError(404, resourceName);
         }
         
         response.status(200).json(data);
@@ -79,8 +79,8 @@ const controllerFactory = (Model, notFoundMessage) => {
         const { id } = request.params;
         const data = await Model.findByIdAndDelete(id);
         
-        if (!data) {
-          throw new ApiError(notFoundMessage, 404);
+       if (!data) {
+          throw new ApiError(404, resourceName);
         }
         
         response.status(204).json();
