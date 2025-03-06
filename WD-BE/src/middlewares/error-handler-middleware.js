@@ -1,7 +1,8 @@
 import ApiError from '../errors/api-error.js';
+import JwtError from '../errors/jwt-error.js';
 import { formatErrorResponse } from "./error-response-middleware.js";
-import { setError } from "../helpers/error-helper.js";
-import { DEFAULT_ERROR_MESSAGES, JWT_ERROR_MESSAGES } from '../constants/error-messages.js';
+import { setError } from '../utils/error-context.js';
+import { DEFAULT_ERROR_MESSAGES } from '../constants/error-messages.js';
 
 /**
  * Creates a middleware function for handling various error types.
@@ -15,10 +16,7 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
         CAST_ERROR = DEFAULT_ERROR_MESSAGES.CAST_ERROR,
         NOT_FOUND = DEFAULT_ERROR_MESSAGES.NOT_FOUND,
         SERVER_ERROR = DEFAULT_ERROR_MESSAGES.SERVER_ERROR,
-        INVALID_TOKEN = JWT_ERROR_MESSAGES.INVALID_TOKEN,
-        EXPIRED_TOKEN = JWT_ERROR_MESSAGES.EXPIRED_TOKEN
-    } = ERROR_MESSAGES;
-
+    } = {};
 
     /**
      * Express error handling middleware
@@ -34,6 +32,19 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
         error.status ||= 'error';
 
         const isApiError = error instanceof ApiError;
+        if (isApiError) {
+            setError(
+                error, 
+                error.statusCode, 
+                error.status, 
+                ERROR_MESSAGES[error.statusCode] || error.message
+            );
+        }
+
+         // Handle 404 Not Found errors
+        if (!isApiError && error.statusCode === 404) {
+            setError(error, 404, 'fail', NOT_FOUND);
+        }
         
         // Handle Mongoose validation errors
         if (error.name === 'ValidationError') {
@@ -48,17 +59,8 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
         }
 
         // Handle JWT authentication errors
-        if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
-            setError(error, 401, 'fail', 
-                error.expiredAt 
-                    ? EXPIRED_TOKEN
-                    : INVALID_TOKEN
-            );
-        }
-
-        // Handle 404 Not Found errors
-        if (error.statusCode === 404 && !isApiError) {
-            setError(error, 404, 'fail', NOT_FOUND);
+        if (error instanceof JwtError) {
+            setError(error, 401, error.errorType, error.customMessage);
         }
 
         // Handle server errors
