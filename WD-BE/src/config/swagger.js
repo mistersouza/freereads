@@ -1,26 +1,27 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import { ENV } from './env.js';
 
 const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'FreeReads API',
+      title: 'Free Reads API',
       version: '1.0.0',
-      description: 'FreeReads API Documentation',
-      contact: {
-        name: 'API Support',
-        url: 'https://github.com/mistersouza/freereads'
-      }
+      description: 'FreeReads API documentation'
     },
     servers: [
       {
         url: process.env.NODE_ENV === 'production' 
           ? 'https://api.freereads.com' 
-          : process.env.PORT || 'http://localhost:5000/api/v1',
+          : process.env.PORT || 'http://localhost:5500',
         description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
       }
-    ]
+    ],
+    externalDocs: {
+      description: 'Find out more about Free Reads',
+      url: 'https://github.com/mistersouza/freereads'
+    }
   },
   apis: ['./src/routes/*.js', './src/controllers/*.js', './src/models/*.js']
 };
@@ -28,11 +29,14 @@ const options = {
 const specs = swaggerJsdoc(options);
 
 const swaggerDocs = (app) => {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-  app.get('/api-docs.json', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(specs);
-  });
+  const uiOptions = {
+    swaggerOptions: {
+      persistAuthorization: true,
+      defaultModelsExpandDepth: -1
+    }
+  };
+  
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, uiOptions));
   
   console.log(`Swagger docs available at /api-docs`);
 };
