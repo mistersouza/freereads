@@ -1,5 +1,6 @@
 import { scanForISBN, fetchBookDetails } from '../utils/book-scanner-service.js';
 import ApiError from '../errors/api-error.js';
+import { getResourceName } from '../helpers/error-context.js';
 
 /**
  * @swagger
@@ -111,36 +112,35 @@ import ApiError from '../errors/api-error.js';
  *       500:
  *         description: Server error
  */
-const scanBook = async (req, res, next) => {
-    const { imageUrl } = req.body;
+const scanBook = async (request, response, next) => {
     try {
+        const { imageUrl } = request.body;
         if (!imageUrl) {
             throw new ApiError(
-                'Book cover missing! Try scanning again.',
-                400
+                400, 
+                getResourceName(request),
             );
         }
 
         const isbn = await scanForISBN(imageUrl);
-        
         if (!isbn) {
             throw new ApiError(
-                'Oops! We couldn\'t quite get what need. Try scanning another image.',
-                404
+                422, 
+                getResourceName(request),
             );
         }
 
         const bookDetails = await fetchBookDetails(isbn);
         if (!bookDetails) {
             throw new ApiError(
-                'Oops! We couldn\'t find that book. Do you wanna try again?',
-                404
+                404, 
+                getResourceName(request),
             );
         }
-        res.status(200).json(bookDetails);
+        response.status(200).json(bookDetails);
     } catch (error) {
         next(error);
     }
-}
+};
 
 export { scanBook };

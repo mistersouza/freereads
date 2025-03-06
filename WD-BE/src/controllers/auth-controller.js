@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
 import ApiError from '../errors/api-error.js';
 import User from '../models/user-model.js';
-import { ENV } from '../config/env.js';
-import { AUTH_ERROR_MESSAGES } from '../constants/error-messages.js';
 import { generateToken } from '../utils/jwt-handler.js';
+import { getResourceName } from '../helpers/error-context.js';
 
 /**
  * @swagger
@@ -79,8 +78,8 @@ const register = async (request, response, next) => {
         const activeAccount = await User.findOne({ email });
         if (activeAccount) {
             throw new ApiError(
-                AUTH_ERROR_MESSAGES.EMAIL_IN_USE,
-                409
+                409,
+                getResourceName(request)
             );
         }
 
@@ -162,15 +161,15 @@ const login = async (request, response, next) => {
         const user = await User.findOne({ email }).select('+hashedPassword');
         if (!user) {
             throw new ApiError(
-                AUTH_ERROR_MESSAGES.UNKNOWN_USER,
-                404
+                404,
+                getResourceName(request)
             );
         }
 
         if (!await user.comparePassword(password)) {
             throw new ApiError(
-                AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS,
-                401
+                401,
+                getResourceName(request)
             );
         }
 
