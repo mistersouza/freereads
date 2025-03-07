@@ -11,6 +11,12 @@ import {
     deleteHub 
 } from '../controllers/hub-controller.js';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Hubs
+ *   description: Hubs management API (v1)
+ */
 
 const router = Router();
 
