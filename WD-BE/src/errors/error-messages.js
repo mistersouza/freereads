@@ -4,16 +4,6 @@
  */
 
 /**
- * Default error messages for common error scenarios across the application.
- * @type {Object.<string, string>}
- */
-const DEFAULT_ERROR_MESSAGES = {
-    CAST_ERROR: 'Hmm… this ID seems off. It doesn\'t match any records',
-    NOT_FOUND: '404 vibes—this one\'s gone missing!',
-    SERVER_ERROR: 'Bookkeeper\'s out! Please knock again later.',
-};
-
-/**
  * Authentication and authorization error messages
  * @type {Object.<number|string, string>}
  */
@@ -25,19 +15,29 @@ const AUTH_ERROR_MESSAGES = {
 };
 
 /**
- * User error messages
- * @type {Object.<number|string, string>}
- */
-const USER_ERROR_MESSAGES = {
-    404: 'This book seems to have vanished from our shelves!',
-};
-
-/**
  * Book error messages
  * @type {Object.<number|string, string>}
  */
 const BOOK_ERROR_MESSAGES = {
     404: 'This book seems to have vanished from our shelves!',
+};
+
+/**
+ * Default error messages for common error scenarios across the application.
+ * @type {Object.<string, string>}
+ */
+const DEFAULT_ERROR_MESSAGES = {
+    CAST_ERROR: 'Hmm… this ID seems off. It doesn\'t match any records',
+    NOT_FOUND: '404 vibes—this one\'s gone missing!',
+    SERVER_ERROR: 'Bookkeeper\'s out! Please knock again later.',
+};
+
+/**
+ * Hub error messages
+ * @type {Object.<number|string, string>}
+ */
+const HUB_ERROR_MESSAGES = {
+    404: 'This hub you\'re looking for is MIA!',
 };
 
 /**
@@ -50,9 +50,19 @@ const SCAN_ERROR_MESSAGES = {
     422: 'Oops! We couldn\'t quite get what need. Try scanning another image.',
 };
 
+/**
+ * User error messages
+ * @type {Object.<number|string, string>}
+ */
+const USER_ERROR_MESSAGES = {
+    404: 'This user seems to have vanished from our records!',
+};
+
 export { 
-    DEFAULT_ERROR_MESSAGES,
     AUTH_ERROR_MESSAGES,
+    BOOK_ERROR_MESSAGES,
+    DEFAULT_ERROR_MESSAGES,
+    HUB_ERROR_MESSAGES,
     SCAN_ERROR_MESSAGES,
-    USER_ERROR_MESSAGES,
-    BOOK_ERROR_MESSAGES,};
+    USER_ERROR_MESSAGES
+};
