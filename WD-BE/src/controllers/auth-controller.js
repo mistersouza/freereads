@@ -64,9 +64,42 @@ import { generateToken } from '../utils/jwt-handler.js';
  *                       type: string
  *       409:
  *         description: Email already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                   example: We've seen you before! Try logging in instead.
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Bookkeeper's out! Please knock again later.
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  */
+
 const register = async (request, response, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -83,7 +116,7 @@ const register = async (request, response, next) => {
         }
 
         const [ user ] = await User.create(
-            [{ email, password, role }],
+            [{ email, hashedPassword: password, role }],
             { session }
         );
 
@@ -148,10 +181,58 @@ const register = async (request, response, next) => {
  *                       description: User's role in the system
  *       401:
  *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                   example: Something's off with that email or password. Give it another go!
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  *       404:
  *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                   example: No luck! That username's off the grid. Try registering instead.
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Bookkeeper's out! Please knock again later.
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  */
 const login = async (request, response, next) => {
     const { email, password } = request.body;
