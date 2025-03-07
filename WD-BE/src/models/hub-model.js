@@ -1,7 +1,66 @@
 import mongoose from 'mongoose';
 
-const hubSchema = new mongoose.Schema({
-  street: {
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Hub:
+ *       type: object
+ *       required:
+ *         - street
+ *         - postcode
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: Auto-generated MongoDB ID
+ *         street:
+ *           type: string
+ *           description: Street address of the hub
+ *         postcode:
+ *           type: string
+ *           description: Postal code of the hub location
+ *         geoLocation:
+ *           type: object
+ *           properties:
+ *             type:
+ *               type: string
+ *               enum: [Point]
+ *               description: GeoJSON type, always "Point" for hubs
+ *             coordinates:
+ *               type: array
+ *               items:
+ *                 type: number
+ *               description: [longitude, latitude] coordinates
+ *         books:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Array of book IDs available at this hub
+ *         hasBooks:
+ *           type: boolean
+ *           description: Indicates whether the hub has any books available
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: When the hub was created
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: When the hub was last updated
+ *       example:
+ *         _id: "60d21b4667d0d8992e610c85"
+ *         street: "123 Reading Road"
+ *         postcode: "AB12 3CD"
+ *         geoLocation:
+ *           type: "Point"
+ *           coordinates: [-0.127758, 51.507351]
+ *         books: ["60d21b4667d0d8992e610c86"]
+ *         hasBooks: true
+ *         createdAt: "2023-01-01T00:00:00.000Z"
+ *         updatedAt: "2023-01-01T00:00:00.000Z"
+ */
+
+const hubSchema = new mongoose.Schema({  street: {
     type: String,
     required: [true, "Don't leave me lost — add a street!"],
     trim: true,
