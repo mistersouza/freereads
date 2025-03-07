@@ -65,7 +65,7 @@ import { getResourceName } from '../errors/index.js';
 
 /**
  * @swagger
- * /api/v1/books/scan:
+ * /api/v1/scan:
  *   post:
  *     summary: Scan a book
  *     description: Endpoint to scan book information from an image URL. The image is processed to detect an ISBN, which is then used to fetch book details.
@@ -96,6 +96,11 @@ import { getResourceName } from '../errors/index.js';
  *                 message:
  *                   type: string
  *                   example: "Book cover missing! Try scanning again."
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  *       404:
  *         description: Book not found or ISBN not detected
  *         content:
@@ -108,9 +113,42 @@ import { getResourceName } from '../errors/index.js';
  *                   example: "fail"
  *                 message:
  *                   type: string
+ *                   example: "Oops! We couldn't find that book. Do you wanna try again?"
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
+ *       422:
+ *         description: Unprocessable entity - Could not extract data from image
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "fail"
+ *                 message:
+ *                   type: string
  *                   example: "Oops! We couldn't quite get what need. Try scanning another image."
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
  */
 const scanBook = async (request, response, next) => {
     try {
