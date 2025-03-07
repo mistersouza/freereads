@@ -18,6 +18,11 @@ import Book from '../models/book-model.js';
  *               message:
  *                 type: string
  *                 example: This book seems to have vanished from our shelves!
+ *               timestamp:
+ *                 type: string
+ *                 format: date-time
+ *               path:
+ *                 type: string
  */
 
 /**
@@ -36,9 +41,26 @@ import Book from '../models/book-model.js';
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Book'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Bookkeeper's out! Please knock again later.
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  */
 
-/* Rest of endpoint documentation */
 /**
  * @swagger
  * /api/v1/books/{id}:
@@ -46,8 +68,6 @@ import Book from '../models/book-model.js';
  *     summary: Get a book by ID
  *     description: Retrieve details for a specific book by its ID.
  *     tags: [Books]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -62,8 +82,24 @@ import Book from '../models/book-model.js';
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Book'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
+ *       400:
+ *         description: Invalid ID format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                   example: Hmm… this ID seems off. It doesn't match any records
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  *       404:
  *         $ref: '#/components/responses/BookNotFoundError'
  */
@@ -128,6 +164,40 @@ import Book from '../models/book-model.js';
  *               $ref: '#/components/schemas/Book'
  *       400:
  *         description: Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                   example: No title, no tale! Let's add one
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Bookkeeper's out! Please knock again later.
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  */
 
 /**
@@ -183,6 +253,23 @@ import Book from '../models/book-model.js';
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Book'
+ *       400:
+ *         description: Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:
@@ -196,7 +283,7 @@ import Book from '../models/book-model.js';
  * /api/v1/books/{id}:
  *   delete:
  *     summary: Delete a book
- *     description: Remove a book from the system.
+ *     description: Remove a book from the system. Restricted to admin roles.
  *     tags: [Books]
  *     security:
  *       - bearerAuth: []
