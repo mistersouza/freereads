@@ -30,12 +30,12 @@ import mongoose from 'mongoose';
  *               type: array
  *               items:
  *                 type: number
- *               description: [longitude, latitude] coordinates
+ *               description: "Coordinates as [longitude, latitude]"
  *         books:
  *           type: array
  *           items:
  *             type: string
- *           description: Array of book IDs available at this hub
+ *           description: "Array of book IDs available at this hub"
  *         hasBooks:
  *           type: boolean
  *           description: Indicates whether the hub has any books available
@@ -60,7 +60,8 @@ import mongoose from 'mongoose';
  *         updatedAt: "2023-01-01T00:00:00.000Z"
  */
 
-const hubSchema = new mongoose.Schema({  street: {
+const hubSchema = new mongoose.Schema({
+  street: {
     type: String,
     required: [true, "Don't leave me lost — add a street!"],
     trim: true,
@@ -141,6 +142,5 @@ hubSchema.pre('save', async function (next) {
     next(error);
   }
 });
-
 
 export default mongoose.model('Hub', hubSchema);
