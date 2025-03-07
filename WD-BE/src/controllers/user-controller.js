@@ -23,6 +23,11 @@ import controllerFactory from '../utils/controller-factory.js';
  *               message:
  *                 type: string
  *                 example: Token's ghosted. Time for a new one!
+ *               timestamp:
+ *                 type: string
+ *                 format: date-time
+ *               path:
+ *                 type: string
  *     ForbiddenError:
  *       description: User doesn't have permission to access this resource
  *       content:
@@ -36,6 +41,11 @@ import controllerFactory from '../utils/controller-factory.js';
  *               message:
  *                 type: string
  *                 example: Hold up! You're not cleared for this.
+ *               timestamp:
+ *                 type: string
+ *                 format: date-time
+ *               path:
+ *                 type: string
  *     UserNotFoundError:
  *       description: The requested user was not found
  *       content:
@@ -48,7 +58,12 @@ import controllerFactory from '../utils/controller-factory.js';
  *                 example: fail
  *               message:
  *                 type: string
- *                 example: We looked everywhere, but that user's MIA
+ *                 example: This user seems to have vanished from our records!
+ *               timestamp:
+ *                 type: string
+ *                 format: date-time
+ *               path:
+ *                 type: string
  */
 
 /**
@@ -56,7 +71,7 @@ import controllerFactory from '../utils/controller-factory.js';
  * /api/v1/users:
  *   get:
  *     summary: Get all users
- *     description: Retrieve a list of all users. Restricted to admin roles.
+ *     description: Retrieve a list of all users. Restricted to boss and overlord roles.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -73,6 +88,24 @@ import controllerFactory from '../utils/controller-factory.js';
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:
  *         $ref: '#/components/responses/ForbiddenError'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Bookkeeper's out! Please knock again later.
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  */
 
 /**
@@ -80,7 +113,7 @@ import controllerFactory from '../utils/controller-factory.js';
  * /api/v1/users/{id}:
  *   get:
  *     summary: Get a user by ID
- *     description: Retrieve a single user by their ID. Users can access their own data, admins can access any user.
+ *     description: Retrieve a single user by their ID. Users can access their own data, boss and overlord roles can access any user.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -104,6 +137,24 @@ import controllerFactory from '../utils/controller-factory.js';
  *         $ref: '#/components/responses/ForbiddenError'
  *       404:
  *         $ref: '#/components/responses/UserNotFoundError'
+ *       400:
+ *         description: Invalid ID format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                   example: Hmm… this ID seems off. It doesn't match any records
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  */
 
 /**
@@ -111,7 +162,7 @@ import controllerFactory from '../utils/controller-factory.js';
  * /api/v1/users:
  *   post:
  *     summary: Create a new user
- *     description: Create a new user in the system. Restricted to admin roles.
+ *     description: Create a new user in the system. Restricted to boss and overlord roles.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -149,6 +200,21 @@ import controllerFactory from '../utils/controller-factory.js';
  *               $ref: '#/components/schemas/User'
  *       400:
  *         description: Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:
@@ -160,7 +226,7 @@ import controllerFactory from '../utils/controller-factory.js';
  * /api/v1/users/{id}:
  *   put:
  *     summary: Update a user
- *     description: Update an existing user. Users can update their own data, admins can update any user.
+ *     description: Update an existing user. Users can update their own data, boss and overlord roles can update any user.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -199,6 +265,21 @@ import controllerFactory from '../utils/controller-factory.js';
  *               $ref: '#/components/schemas/User'
  *       400:
  *         description: Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 path:
+ *                   type: string
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:
@@ -212,7 +293,7 @@ import controllerFactory from '../utils/controller-factory.js';
  * /api/v1/users/{id}:
  *   delete:
  *     summary: Delete a user
- *     description: Delete a user by ID. Users can delete their own account, admins can delete any user.
+ *     description: Delete a user by ID. Users can delete their own account, boss and overlord roles can delete any user.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
