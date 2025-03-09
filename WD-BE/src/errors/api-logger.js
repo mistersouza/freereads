@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-const createLogger = () => {
+const createLog = () => {
     
     /**
      * Logs HTTP request details to a file.
@@ -39,9 +39,45 @@ const createLogger = () => {
             next();
         }
     );
-    return { httpRequest };
+
+    /**
+     * Logs warning information
+     * @param {string} message - Warning message to log
+     */
+    const error = (error) => {
+        console.error(chalk.red(`[ERROR] ${error.message}`));
+        if (error.stack) {
+            console.error(chalk.white(error.stack));
+        }
+    };
+
+    /**
+     * Logs info message
+     * @param {string} message - Info message to log
+     */
+    const warn = (message) => {
+        console.warn(chalk.yellow(`[WARN] ${message}`));
+    };
+
+    /**
+     * Logs info message
+     * @param {string} message - Info message to log
+     */
+    const info = (message) => {
+        console.info(chalk.green(`[INFO] ${message}`));
+    };
+
+    /**
+     * Logs debug information
+     * @param {string} message - Debug message to log
+     */
+    const debug = (message) => {
+        console.debug(chalk.magenta(`[DEBUG] ${message}`));
+    };
+
+    return { httpRequest, error, warn, info, debug };
 }
 
-const log = createLogger();
+const log = createLog();
 
 export default log;

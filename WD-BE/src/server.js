@@ -38,5 +38,5 @@ app.use('/api/v1/users', userRouter);
 // Error logging
 
 app.listen(ENV.PORT, () => {
-  console.log(`🔓 Doors to the freereads are open on port ${ENV.PORT}`);
+  log.info(`🔓 Doors to the freereads are open on port ${ENV.PORT}`);
 });
