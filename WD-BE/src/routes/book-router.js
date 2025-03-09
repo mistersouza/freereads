@@ -1,6 +1,5 @@
 import express from 'express';
-import { normalizeError } from '../middlewares/error-handler-middleware.js';
-import { BOOK_ERROR_MESSAGES } from '../errors/index.js';
+import { normalizeError, BOOK_ERROR_MESSAGES } from '../errors/index.js';
 
 import {
     getAllBooks,

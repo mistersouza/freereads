@@ -1,6 +1,11 @@
-import { ApiError, JwtError, setError } from '../errors/index.js';
-import { formatErrorResponse } from "./error-response-middleware.js";
-import { DEFAULT_ERROR_MESSAGES } from '../errors/index.js';
+import { 
+    ApiError,
+    JwtError,
+    setError,
+    formatErrorResponse,
+    DEFAULT_ERROR_MESSAGES 
+} from './index.js';
+
 
 /**
  * Creates a middleware function for handling various error types.
@@ -39,9 +44,9 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
             );
         }
 
-         // Handle 404 Not Found errors
-        if (!isApiError && error.statusCode === 404) {
-            setError(error, 404, 'fail', NOT_FOUND);
+        // Handle mongoose invalid ID
+        if (error.name === 'CastError') {
+            setError(error, 400, 'fail', CAST_ERROR);
         }
         
         // Handle Mongoose validation errors
@@ -51,16 +56,16 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
             );
         }
 
-        // Handle mongoose invalid ID
-        if (error.name === 'CastError') {
-            setError(error, 400, 'fail', CAST_ERROR);
-        }
-
         // Handle JWT authentication errors
         if (error instanceof JwtError) {
             setError(error, 401, error.errorType, error.customMessage);
         }
 
+         // Handle 404 Not Found errors
+        if (!isApiError && error.statusCode === 404) {
+            setError(error, 404, 'fail', NOT_FOUND);
+        }
+        
         // Handle server errors
         if (error.statusCode > 499) {
             setError(error, error.statusCode, 'error', SERVER_ERROR);
@@ -71,4 +76,4 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
     }
 };
 
-export { normalizeError };
+export default normalizeError;
