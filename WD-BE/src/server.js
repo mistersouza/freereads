@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import morgan from 'morgan';  
 
 
 import { ENV } from './config/env.js';
 import { corsOptions } from './config/cors.js';
 import { swaggerDocs } from './config/swagger.js';
+import { log } from './errors/index.js';
 import connectDB from './config/db.js';
 
 import scanBookRouter from './routes/scan-router.js';
@@ -16,8 +16,8 @@ import hubRouter from './routes/hub-router.js';
 
 const app = express();
 // Enable request logging
-app.use(morgan('dev'));
-// Enable CORS with imported config options
+app.use(log.httpRequest());
+// Enable CORS
 app.use(cors(corsOptions));
 // Enable body parsing
 app.use(express.urlencoded({ extended: false }));
@@ -34,6 +34,8 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/books', bookRouter);
 app.use('/api/v1/hubs', hubRouter);
 app.use('/api/v1/users', userRouter);
+
+// Error logging
 
 app.listen(ENV.PORT, () => {
   console.log(`🔓 Doors to the freereads are open on port ${ENV.PORT}`);
