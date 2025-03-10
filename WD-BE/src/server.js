@@ -15,13 +15,13 @@ import bookRouter from './routes/book-router.js';
 import hubRouter from './routes/hub-router.js';
 
 const app = express();
-// Enable request logging
-app.use(log.httpRequest());
 // Enable CORS
 app.use(cors(corsOptions));
 // Enable body parsing
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+// Enable request logging
+app.use(log.httpRequest());
 // Enable Swagger docs
 swaggerDocs(app);
 

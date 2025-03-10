@@ -1,5 +1,6 @@
 import { ENV } from '../config/env.js';
-import { log } from '../errors/index.js';
+import { log } from './index.js';
+
 
 /**
  * Handles error response.
