@@ -1,19 +1,44 @@
+import fs from 'fs';
+import path from 'path';
 import chalk from 'chalk';
 // Direct import to avoid circular dependency
 import serializeError from './error-serializer.js';
 import { ENV } from '../config/env.js';
 
 const createLog = (options = {}) => {
-    const { parseJson = ENV.NODE_ENV === 'production' } = options;
+    const { isLive = ENV.NODE_ENV === 'production' } = options;
+
+    const logFile = (level, message, metadata) => {
+        if (!isLive) return; // Skip file logging if not in production
+        
+        const logsDir = path.join(process.cwd(), 'logs');
+        const errorsPath = path.join(logsDir, 'errors.log');
+        const accessPath = path.join(logsDir, 'access.log');
+        
+        // Create directory on first write
+        if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir, { recursive: true });
+        
+        const filePath = level === 'error' ? errorsPath : accessPath;
+        const log = formatLog(level, message, metadata);
+        
+        try {
+            fs.appendFileSync(filePath, log + '\n');
+        } catch (error) {
+            console.error(
+                `Couldn't save the ${level.toUpperCase()} log to ${filePath}. Error:`, 
+                error
+            );
+        }
+    };
 
     const formatLog = (level, message, metadata = {}) => {
-        if (parseJson) {
+        if (isLive) {
             return JSON.stringify({
                 timestamp: new Date().toISOString(),
                 level,
                 message,
                 ...metadata,
-            });
+            }, null, 2);
         }
         
         const logColor = {
@@ -23,7 +48,13 @@ const createLog = (options = {}) => {
             debug: chalk.magenta,
         };
 
-        return `${logColor[level](`[${level.toUpperCase()}] ${message}`)}`;
+        let log = `${logColor[level](`[${level.toUpperCase()}] ${message}`)}`; 
+        
+        if (Object.keys(metadata).length > 0) {
+            log += `\n${JSON.stringify(metadata, null, 2)}`;
+        }
+
+        return log;
     }
     
     /**
@@ -42,13 +73,7 @@ const createLog = (options = {}) => {
                 const duration = hrTime[0] * 1000 + hrTime[1] / 1000000;
                 const contentLength = response.get('Content-Length') || 'N/A';
 
-                const metadata = {
-                    method,
-                    url,
-                    statusCode,
-                    duration: duration.toFixed(3),
-                    contentLength,
-                };
+                const metadata = {};
 
                 if (Object.keys(query ?? {}).length > 0) {
                     metadata.query = query;
@@ -86,6 +111,8 @@ const createLog = (options = {}) => {
                 if ('body' in metadata) {
                     console.log(chalk.blue('Body:'), metadata.body);
                 }
+
+                logFile('http', `${method} ${url}`, metadata);
             });
             next();
         }
@@ -98,6 +125,8 @@ const createLog = (options = {}) => {
     const error = (error) => {
         const { message, metadata } = serializeError(error);
         console.error(formatLog('error', message, metadata));
+
+        logFile('error', message, metadata);
     };
 
     /**
@@ -106,6 +135,8 @@ const createLog = (options = {}) => {
      */
     const warn = (message, metadata = {}) => {
         console.warn(formatLog('warn', message, metadata));
+        
+        logFile('warn', message, metadata);
     };
 
     /**
@@ -114,6 +145,8 @@ const createLog = (options = {}) => {
      */
     const info = (message, metadata = {}) => {
         console.info(formatLog('info', message, metadata));
+
+         logFile('info', message, metadata);
     };
 
     /**
@@ -122,6 +155,10 @@ const createLog = (options = {}) => {
      */
     const debug = (message, metadata = {}) => {
         console.debug(formatLog('debug', message, metadata));
+
+        if (!isLive) {
+            console.debug(formatLog('debug', message, metadata));
+        }
     };
 
     return { httpRequest, error, warn, info, debug };
