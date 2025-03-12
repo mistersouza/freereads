@@ -153,12 +153,12 @@ const createLog = (options = {}) => {
      * @param {string} message - Debug message to log
      */
     const debug = (message, metadata = {}) => {
-        console.debug(formatLog('debug', message, metadata));
-
         if (!isLive) {
             console.debug(formatLog('debug', message, metadata));
         }
+        logFile('debug', message, metadata);
     };
+
 
     return { httpRequest, error, warn, info, debug };
 }
