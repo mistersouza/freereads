@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
+import { createStream } from 'rotating-file-stream';
 // Direct import to avoid circular dependency
 import serializeError from './error-serializer.js';
 import { ENV } from '../config/env.js';
@@ -8,26 +9,32 @@ import { ENV } from '../config/env.js';
 const createLog = (options = {}) => {
     const { isLive = ENV.NODE_ENV === 'production' } = options;
 
+    const logsDir = path.join(process.cwd(), 'logs');
+    const errorsPath = path.join(logsDir, 'errors.log');
+    const accessPath = path.join(logsDir, 'access.log');
+    
+    if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir, { recursive: true });
+
+    const accessLogStream = createStream('access.log', {
+        interval: '1d',
+        path: logsDir,
+        size: '10M',
+    });
+
+    const errorLogStream = createStream('errors.log', {
+        interval: '1d',
+        path: logsDir,
+        size: '10M',
+    });
+
     const logFile = async (level, message, metadata) => {
-        if (!isLive) return;
+        if (!isLive) return;  
+
+        const log = formatLog(level, message, metadata) + '\n';
         
-        const logsDir = path.join(process.cwd(), 'logs');
-        const errorsPath = path.join(logsDir, 'errors.log');
-        const accessPath = path.join(logsDir, 'access.log');
-        
-        if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir, { recursive: true });
-        
-        const filePath = level === 'error' ? errorsPath : accessPath;
-        const log = formatLog(level, message, metadata);
-        
-        try {
-            await fs.promises.appendFile(filePath, log + '\n');
-        } catch (error) {
-            console.error(
-                `Couldn't save the ${level.toUpperCase()} log to ${filePath}. Error:`, 
-                error
-            );
-        }
+        level === 'error' 
+            ? errorLogStream.write(log)
+            : accessLogStream.write(log);
     };
 
     const formatLog = (level, message, metadata = {}) => {
@@ -62,10 +69,10 @@ const createLog = (options = {}) => {
      * @param {Object} response - Express response object
      */
     const httpRequest = () => (
-        (request, response, next) => {
+        async (request, response, next) => {
             request.startTime = process.hrtime();
             
-            response.on('finish', () => {
+            response.on('finish', async () => {
                 const { method, originalUrl: url, query, body } = request;
                 const { statusCode } = response;
                 const hrTime = process.hrtime(request.startTime);
@@ -111,7 +118,7 @@ const createLog = (options = {}) => {
                     console.log(chalk.blue('Body:'), metadata.body);
                 }
 
-                logFile('http', `${method} ${url}`, metadata);
+                await logFile('info', `${method} ${url}`, metadata);
             });
             next();
         }
@@ -121,44 +128,42 @@ const createLog = (options = {}) => {
      * Logs warning information
      * @param {string} message - Warning message to log
      */
-    const error = (error) => {
-        const { message, metadata } = serializeError(error);
-        console.error(formatLog('error', message, metadata));
+    const error = async (error) => {
+        const { message, metadata = {} } = serializeError(error);
+        if (!isLive) console.error(formatLog('error', message, metadata));
 
-        logFile('error', message, metadata);
+        await logFile('error', message, metadata);
     };
 
     /**
      * Logs info message
      * @param {string} message - Info message to log
      */
-    const warn = (message, metadata = {}) => {
-        console.warn(formatLog('warn', message, metadata));
+    const warn = async (message, metadata = {}) => {
+        if (!isLive) console.warn(formatLog('warn', message, metadata));
         
-        logFile('warn', message, metadata);
+        await logFile('warn', message, metadata);
     };
 
     /**
      * Logs info message
      * @param {string} message - Info message to log
      */
-    const info = (message, metadata = {}) => {
-        console.info(formatLog('info', message, metadata));
+    const info = async (message, metadata = {}) => {
+        if (!isLive) console.info(formatLog('info', message, metadata));
         
-        logFile('info', message, metadata);
+        await logFile('info', message, metadata);
     };
 
     /**
      * Logs debug information
      * @param {string} message - Debug message to log
      */
-    const debug = (message, metadata = {}) => {
-        if (!isLive) {
-            console.debug(formatLog('debug', message, metadata));
-        }
-        logFile('debug', message, metadata);
-    };
+    const debug = async (message, metadata = {}) => {
+        if (!isLive) console.debug(formatLog('debug', message, metadata));
 
+        await logFile('debug', message, metadata);
+    };
 
     return { httpRequest, error, warn, info, debug };
 }
