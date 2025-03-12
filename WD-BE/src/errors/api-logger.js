@@ -8,21 +8,20 @@ import { ENV } from '../config/env.js';
 const createLog = (options = {}) => {
     const { isLive = ENV.NODE_ENV === 'production' } = options;
 
-    const logFile = (level, message, metadata) => {
-        if (!isLive) return; // Skip file logging if not in production
+    const logFile = async (level, message, metadata) => {
+        if (!isLive) return;
         
         const logsDir = path.join(process.cwd(), 'logs');
         const errorsPath = path.join(logsDir, 'errors.log');
         const accessPath = path.join(logsDir, 'access.log');
         
-        // Create directory on first write
         if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir, { recursive: true });
         
         const filePath = level === 'error' ? errorsPath : accessPath;
         const log = formatLog(level, message, metadata);
         
         try {
-            fs.appendFileSync(filePath, log + '\n');
+            await fs.promises.appendFile(filePath, log + '\n');
         } catch (error) {
             console.error(
                 `Couldn't save the ${level.toUpperCase()} log to ${filePath}. Error:`, 
@@ -145,8 +144,8 @@ const createLog = (options = {}) => {
      */
     const info = (message, metadata = {}) => {
         console.info(formatLog('info', message, metadata));
-
-         logFile('info', message, metadata);
+        
+        logFile('info', message, metadata);
     };
 
     /**
