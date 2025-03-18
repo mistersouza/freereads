@@ -14,6 +14,8 @@ import userRouter from './routes/user-router.js';
 import bookRouter from './routes/book-router.js';
 import hubRouter from './routes/hub-router.js';
 
+import { limiter } from './middlewares/rate-limiter-middleware.js';
+
 const app = express();
 // Enable CORS
 app.use(cors(corsOptions));
@@ -22,6 +24,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // Enable request logging
 app.use(log.httpRequest());
+// Apply rate limiting to all routes
+app.use(limiter);
 // Enable Swagger docs
 swaggerDocs(app);
 

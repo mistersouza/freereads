@@ -10,6 +10,10 @@ export const ENV = {
     CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
+    RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
+    RATE_LIMIT_MIN: parseInt(process.env.RATE_LIMIT_MIN) || 10,
+    RATE_LIMIT_MAX: parseInt(process.env.RATE_LIMIT_MAX) || 100,    
+    LOCAL_IPS: process.env.LOCAL_IPS || '::1,127.0.0.1',
 };
 
 /**
