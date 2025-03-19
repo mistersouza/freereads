@@ -14,6 +14,8 @@ export const ENV = {
     RATE_LIMIT_MIN: parseInt(process.env.RATE_LIMIT_MIN) || 10,
     RATE_LIMIT_MAX: parseInt(process.env.RATE_LIMIT_MAX) || 100,    
     LOCAL_IPS: process.env.LOCAL_IPS || '::1,127.0.0.1',
+    REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
+    REDIS_ENABLED: process.env.REDIS_ENABLED === 'true',  
 };
 
 /**
