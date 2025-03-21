@@ -24,11 +24,13 @@ app.use(log.httpRequest());
 // Enable Swagger docs
 swaggerDocs(app);
 // Boot up app
-const [ speedLimiter, rateLimiter ] = await kickstart();
+const services = await kickstart();
+// Expose services to routes
+app.locals.services = services;
 
-// Apply rate limiting
-app.use(speedLimiter);
-app.use(rateLimiter);
+// Apply limiting
+app.use(services.speedLimiter);
+app.use(services.rateLimiter);
 
 // Routes
 app.use('/api/v1', scanBookRouter);
