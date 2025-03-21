@@ -1,4 +1,3 @@
-import { scanForISBN, fetchBookDetails } from '../utils/book-scanner-service.js';
 import ApiError from '../errors/api-error.js';
 import { getResourceName } from '../errors/index.js';
 
@@ -153,6 +152,8 @@ import { getResourceName } from '../errors/index.js';
 const scanBook = async (request, response, next) => {
     try {
         const { imageUrl } = request.body;
+        const { services } = request.app.locals;
+
         if (!imageUrl) {
             throw new ApiError(
                 400, 
@@ -160,7 +161,7 @@ const scanBook = async (request, response, next) => {
             );
         }
 
-        const isbn = await scanForISBN(imageUrl);
+        const isbn = await services.scanForISBN(imageUrl);
         if (!isbn) {
             throw new ApiError(
                 422, 
@@ -168,7 +169,7 @@ const scanBook = async (request, response, next) => {
             );
         }
 
-        const bookDetails = await fetchBookDetails(isbn);
+        const bookDetails = await services.isbnLookup(isbn);
         if (!bookDetails) {
             throw new ApiError(
                 404, 
