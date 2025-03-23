@@ -13,6 +13,7 @@ import userRouter from './routes/user-router.js';
 import bookRouter from './routes/book-router.js';
 import hubRouter from './routes/hub-router.js';
 import { limitTraffic } from './middlewares/limit-middleware.js';
+import { throttleBlacklist } from './middlewares/blacklist-middleware.js';
 
 const app = express();
 // Enable CORS
@@ -29,6 +30,8 @@ const services = await kickstart();
 // Expose services to routes
 app.locals.services = services;
 
+// Apply blacklisting
+app.use(throttleBlacklist);
 // Apply limiting
 app.use(limitTraffic);
 

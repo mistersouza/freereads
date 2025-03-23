@@ -4,6 +4,7 @@ import { connectRedis, setRemoteStore } from '../infrastructure/redis/index.js';
 import { initializeRequestControl } from '../services/request-control/index.js';
 import { initializeBookFinder } from '../services/book/index.js';
 import { initializeUserService } from '../services/user/index.js';
+import { initializeBlacklist } from '../services/blacklist/index.js';
 
 /**
  * Initializes core services for the application, including Redis connection and rate limiting.
@@ -26,6 +27,7 @@ const initializeServices = async () => {
             ...initializeRequestControl(store),
             ...initializeBookFinder(),
             ...initializeUserService(),
+            ...initializeBlacklist(),
         };
     } catch (error) {
         log.error(error);

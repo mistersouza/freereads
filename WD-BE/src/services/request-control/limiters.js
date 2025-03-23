@@ -25,8 +25,10 @@ const setRateLimiter = (store) => (
                 : request.ip;
         },
         handler: (request, response) => {
-            console.log('User in rate limiter:', request.user ? 'exists' : 'missing');
-            log.warn('Throttled! The system needs a sec.', {
+            const { services } = request.app.locals;
+            services.recordFailedApi(request.ip)
+
+            log.warn('Someone\'s gone too far! ', {
                 ip: request.ip,
                 path: request.path,
                 method: request.method,
