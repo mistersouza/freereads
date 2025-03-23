@@ -12,6 +12,7 @@ import authRouter from './routes/auth-router.js';
 import userRouter from './routes/user-router.js';
 import bookRouter from './routes/book-router.js';
 import hubRouter from './routes/hub-router.js';
+import { limitTraffic } from './middlewares/limit-middleware.js';
 
 const app = express();
 // Enable CORS
@@ -29,8 +30,7 @@ const services = await kickstart();
 app.locals.services = services;
 
 // Apply limiting
-app.use(services.speedLimiter);
-app.use(services.rateLimiter);
+app.use(limitTraffic);
 
 // Routes
 app.use('/api/v1', scanBookRouter);
