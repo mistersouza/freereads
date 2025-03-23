@@ -22,7 +22,7 @@ const shouldSkipRateLimit = (request) => {
         }
 
         const localIps = new Set(
-            ENV.LOCAL_IPS
+            ENV.TRUSTED_IPS
                 .split(',')
                 .map(ip => ip.trim())
                 .filter(ip => Boolean(ip.length))
