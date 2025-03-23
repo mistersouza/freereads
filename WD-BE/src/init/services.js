@@ -3,6 +3,7 @@ import { log } from '../errors/index.js';
 import { connectRedis, setRemoteStore } from '../infrastructure/redis/index.js';
 import { initializeRequestControl } from '../services/request-control/index.js';
 import { initializeBookFinder } from '../services/book/index.js';
+import { initializeUserService } from '../services/user/index.js';
 
 /**
  * Initializes core services for the application, including Redis connection and rate limiting.
@@ -24,6 +25,7 @@ const initializeServices = async () => {
         return {
             ...initializeRequestControl(store),
             ...initializeBookFinder(),
+            ...initializeUserService(),
         };
     } catch (error) {
         log.error(error);
