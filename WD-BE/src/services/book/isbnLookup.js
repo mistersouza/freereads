@@ -1,8 +1,8 @@
-import ApiError from '../../errors/api-error.js';
-import { log } from '../../errors/index.js';
+import { ApiError, log } from '../../errors/index.js';
 
 /**
- * Fetches book details from Google Books API.
+ * Grabs book details from the Google Books API.
+ * 
  * @param {string} isbn - The ISBN number of the book.
  * @returns {Promise<Object|null>} - The book details, or null if not found.
  * @throws {Error} - If the book details cannot be fetched.
@@ -10,6 +10,7 @@ import { log } from '../../errors/index.js';
  */
 const isbnLookup = async (isbn) => {
     if (!isbn) return null;
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
 
@@ -19,36 +20,29 @@ const isbnLookup = async (isbn) => {
             { signal: controller.signal }
         );
 
-        clearTimeout(timeout);
-
         if (!response.ok) {
             throw new ApiError(
-                'Something went sideways. Try again',
-                response.status
+                response.status,
+                'Something went sideways. Try again'
             );
         }
 
-        const data = await response.json();
-        
-        if (!data.items || data.items.length === 0) return null;        
-        
-        const { volumeInfo } = data.items[0];
-        
-        if (!volumeInfo) return null;
-        
-        const { title, authors, publishedDate, imageLinks } = volumeInfo;
+        const data = await response.json();   
 
-        const bookPayload = {
-            isbn,
-            title: title,
-            author: authors?.[0] || 'Anonymous Wordsmith',
-            releaseYear: publishedDate?.split("-")[0] || "Unknown Era",
-            thumbnail: imageLinks?.thumbnail || imageLinks?.smallThumbnail
-        };
-        return bookPayload;
+        return data.items?.[0]?.volumeInfo 
+            ? {
+                isbn,
+                title: data.items[0].volumeInfo.title,
+                author: data.items[0].volumeInfo.authors?.[0] || 'Anonymous Wordsmith',
+                releaseYear: data.items[0].volumeInfo.publishedDate?.split("-")[0] || "Unknown Era",
+                thumbnail: data.items[0].volumeInfo.imageLinks?.thumbnail || data.items[0].volumeInfo.imageLinks?.smallThumbnail
+            } 
+            : null;
     } catch (error) {
         log.error(error);
         return null;
+    } finally {
+        clearTimeout(timeout);
     }
 };
 
