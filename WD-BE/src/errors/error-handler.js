@@ -21,7 +21,7 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
         CAST_ERROR = DEFAULT_ERROR_MESSAGES.CAST_ERROR,
         NOT_FOUND = DEFAULT_ERROR_MESSAGES.NOT_FOUND,
         SERVER_ERROR = DEFAULT_ERROR_MESSAGES.SERVER_ERROR,
-    } = {};
+    } = ERROR_MESSAGES;
 
     /**
      * Express error handling middleware
@@ -47,6 +47,7 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
         }
 
         // Handle business validation errors
+        // findout wherent isntad of Bussinbvalinston isnt equalt to ApiError
         if (error instanceof BusinessValidationError) {
             setError(error, error.statusCode, 'fail', error.message);
         }
