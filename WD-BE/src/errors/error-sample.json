@@ -1,0 +1,7 @@
+{
+  "status": "error",
+  "message": "Resource not found",
+  "timestamp": "2025-03-08T14:25:36.789Z",
+  "path": "/api/some-endpoint",
+  "stack": "Error: Resource not found\n    at Object.someFunction (/path/to/file.js:10:15)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)"
+}

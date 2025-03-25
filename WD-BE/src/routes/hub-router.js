@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { authorizeAccess } from '../middlewares/auth-middleware.js';
-import { normalizeError } from '../middlewares/error-handler-middleware.js';
-import { HUB_ERROR_MESSAGES } from '../errors/index.js';
+import { normalizeError, HUB_ERROR_MESSAGES } from '../errors/index.js';
 
 import { 
     getAllHubs,

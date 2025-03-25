@@ -1,7 +1,6 @@
 import express from 'express';
 import { scanBook } from '../controllers/scan-controller.js';
-import { normalizeError } from '../middlewares/error-handler-middleware.js';
-import { SCAN_ERROR_MESSAGES } from '../errors/index.js';
+import { normalizeError, SCAN_ERROR_MESSAGES } from '../errors/index.js';
 
 /**
  * @swagger

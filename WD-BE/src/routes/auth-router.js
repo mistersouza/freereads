@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import { normalizeError } from '../middlewares/error-handler-middleware.js';
-import { AUTH_ERROR_MESSAGES } from '../errors/index.js';
 import { register, login } from '../controllers/auth-controller.js';
+import { normalizeError, AUTH_ERROR_MESSAGES } from '../errors/index.js';
 
 /**
  * @swagger
