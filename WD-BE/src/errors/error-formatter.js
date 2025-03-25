@@ -3,7 +3,8 @@ import { log } from './index.js';
 
 
 /**
- * Handles error response.
+ * Manages error responses
+ * 
  * @param {Error} error - The error object.
  * @param {Object} request - The request object.
  * @param {Object} response - The response object.
@@ -18,13 +19,19 @@ const formatErrorResponse = (error, request, response) => {
     try {
         log.info(`Shipping back ${error.statusCode} response for ${request.method} @ ${request.originalUrl}`);
 
-        response.status(error.statusCode).json({
+        const errorResponse = {
             status: error.status,
+            name: error.name,
             message: error.message,
             timestamp: new Date().toISOString(),
             path: request.originalUrl || null,
-            stack: ENV.NODE_ENV === 'development' ? error.stack : null
-        });
+        };
+
+        if (error.fields) errorResponse.fields = error.fields;
+
+        if (ENV.NODE_ENV === 'development') errorResponse.stack = error.stack;
+
+        response.status(error.statusCode).json(errorResponse);
     } catch (serializationError) {
         log.error(serializationError);
         log.warn(`Defaulting to a simple error response for ${request.originalUrl}`);

@@ -1,9 +1,11 @@
 import { 
     ApiError,
     JwtError,
+    InputValidationError,
+    BusinessValidationError,
     setError,
     formatErrorResponse,
-    DEFAULT_ERROR_MESSAGES 
+    DEFAULT_ERROR_MESSAGES
 } from './index.js';
 
 
@@ -44,6 +46,21 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
             );
         }
 
+        // Handle business validation errors
+        if (error instanceof BusinessValidationError) {
+            setError(error, error.statusCode, 'fail', error.message);
+        }
+
+        // Handle input validation errors
+        if (error instanceof InputValidationError) {
+            setError(error, error.statusCode, 'fail', error.message);
+        }
+
+        // Handle JWT authentication errors
+        if (error instanceof JwtError) {
+            setError(error, 401, error.errorType, error.message);
+        }
+
         // Handle mongoose invalid ID
         if (error.name === 'CastError') {
             setError(error, 400, 'fail', CAST_ERROR);
@@ -54,11 +71,6 @@ const normalizeError = (ERROR_MESSAGES = {}) => {
             setError(error, 400, 'fail', 
                 Object.values(error.errors).map(err => err.message).join(' | ')
             );
-        }
-
-        // Handle JWT authentication errors
-        if (error instanceof JwtError) {
-            setError(error, 401, error.errorType, error.customMessage);
         }
 
          // Handle 404 Not Found errors
