@@ -1,4 +1,4 @@
-import express from 'express';
+import { Router } from 'express';
 import { scanBook } from '../controllers/scan-controller.js';
 import { normalizeError, SCAN_ERROR_MESSAGES } from '../errors/index.js';
 
@@ -8,10 +8,10 @@ import { normalizeError, SCAN_ERROR_MESSAGES } from '../errors/index.js';
  *   name: Books
  *   description: Book scanning and management API
  */
+const router = Router();
 
-const router = express.Router();
-
-router.post('/scan', scanBook);
+router.route('/scan')
+    .post(scanBook);
 
 // Error handling middleware
 router.use(normalizeError(SCAN_ERROR_MESSAGES));

@@ -236,6 +236,7 @@ const register = async (request, response, next) => {
  */
 const login = async (request, response, next) => {
     const { email, password } = request.body;
+    const { services } = request.app.locals;
 
     try {
         const user = await User.findOne({ email }).select('+hashedPassword');
@@ -247,6 +248,7 @@ const login = async (request, response, next) => {
         }
 
         if (!await user.comparePassword(password)) {
+            await services.recordFailedLogin(request.ip);
             throw new ApiError(
                 401,
                 getResourceName(request)

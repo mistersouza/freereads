@@ -8,12 +8,15 @@ import { normalizeError, AUTH_ERROR_MESSAGES } from '../errors/index.js';
  *   name: Authentication
  *   description: User authentication API (v1)
  */
-
 const router = Router();
 
-router.post('/register', register);
-router.post('/login', login);
+router.route('/register')
+    .post(register);
 
+router.route('/login')
+    .post(login);
+
+// Error handling middleware
 router.use(normalizeError(AUTH_ERROR_MESSAGES));
 
 export default router;
