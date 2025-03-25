@@ -1,7 +1,8 @@
-import ApiError from '../errors/api-error.js';
+import { ApiError } from '../errors/index.js';
 
 /**
- * Creates a set of CRUD controller handlers for a given model
+ * Generates a set of dynamic CRUD controller handlers for any given model
+ * 
  * @param {Object} Model - Mongoose model
  * @param {String} notFoundMessage - Specific not found message for this resource
  * @returns {Object} Object containing controller handlers
