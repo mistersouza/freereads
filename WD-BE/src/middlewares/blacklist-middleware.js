@@ -1,4 +1,4 @@
-import { ApiError, getResourceName, log } from '../errors/index.js';
+import { BusinessValidationError, getResourceName, log } from '../errors/index.js';
 
 /**
  * Middleware to block blacklisted IPs and halt further requests if throttled
@@ -12,22 +12,18 @@ const throttleBlacklist = async (request, response, next) => {
 
     try {
         const { isBlacklisted, remainingTime } = await services.isBlacklisted(request.ip);
-
-        if (!services.isBlacklisted) return next();
-
+        
         if (isBlacklisted) {
-            return next(
-                new ApiError(
-                    429,
-                    getResourceName(request), 
-                    { remainingTime }
-                ));
+            log.warn(`Blocked request from blacklisted IP: ${request.ip}`);
+            
+            return response.status(429).json({
+                message: `You're on timeout. Chill for ${remainingTime} seconds before trying again.`
+            });
         }
-
         next();
    } catch (error) {
         log.error(error);
-        next();
+        next(error);
    }
 };
 
