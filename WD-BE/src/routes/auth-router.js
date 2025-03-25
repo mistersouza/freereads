@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { register, login } from '../controllers/auth-controller.js';
 import { normalizeError, AUTH_ERROR_MESSAGES } from '../errors/index.js';
+import { validateMember } from '../middlewares/validate-middleware.js';
 
 /**
  * @swagger
@@ -10,11 +11,8 @@ import { normalizeError, AUTH_ERROR_MESSAGES } from '../errors/index.js';
  */
 const router = Router();
 
-router.route('/register')
-    .post(register);
-
-router.route('/login')
-    .post(login);
+router.post('/register', validateMember, register);
+router.post('/login', validateMember, login);
 
 // Error handling middleware
 router.use(normalizeError(AUTH_ERROR_MESSAGES));
