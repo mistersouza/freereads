@@ -50,7 +50,8 @@ import bcrypt from "bcryptjs";
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
-    unique: true,
+    required: [true, 'Email is required'],
+    unique: [true, 'Email already exists'],
     trim: true,
     lowercase: true,
   },
@@ -60,7 +61,10 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['member', 'boss', 'overlord'],
+    enum: {
+      values: ['member', 'boss', 'overlord'],
+      message: '{VALUE} is not supported',
+    },
     default: 'member',
   },
   books: [

@@ -1,7 +1,11 @@
 import { validationResult } from 'express-validator';
-import { userRules, scanRules } from '../validations/validation-rules.js';
 import { InputValidationError, getResourceName } from '../errors/index.js';
-
+import { 
+  bookRules,
+  hubRules,
+  scanRules,
+  userRules
+} from '../validations/validation-rules.js';
 
 /**
  * A dynamic factory to validate user input with custom express-validator rules.
@@ -53,4 +57,16 @@ const validateMember = validate([userRules.email, userRules.password]);
  */
 const validateScan = validate([scanRules.imageUrl, scanRules.isbn, scanRules.check]);
 
-export { validateMember, validateScan };
+/**
+ * Master book input validation with laser-sharp accuracy.
+ * 
+ * This middleware uses the dynamic `validate` middleware function
+ * and applies specific rules for validating book-related inputs.
+ * 
+ * @see bookRules.title
+ * @see bookRules.author
+ * @see bookRules.hubs
+ */
+const validateBook = validate([bookRules.title, bookRules.author, bookRules.hubs]);
+
+export { validateMember, validateScan, validateBook };

@@ -63,12 +63,12 @@ import mongoose from 'mongoose';
 const hubSchema = new mongoose.Schema({
   street: {
     type: String,
-    required: [true, "Don't leave me lost — add a street!"],
+    required: [true, 'Street is required'],
     trim: true,
   },
   postcode: {
     type: String,
-    required: [true, 'Zip it up! We need that postcode.'],
+    required: [true, 'Postcode is required'],
     trim: true,
   },
   geoLocation: {
