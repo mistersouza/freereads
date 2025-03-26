@@ -1,13 +1,7 @@
 import express from 'express';
 import { authorizeAccess } from '../middlewares/auth-middleware.js';
 import { normalizeError, USER_ERROR_MESSAGES } from '../errors/index.js';
-import {
-    getUsers,
-    getUser,
-    createUser,
-    updateUser,
-    deleteUser 
-} from '../controllers/user-controller.js';
+import { getUsers, getUser, createUser, updateUser, deleteUser } from '../controllers/user-controller.js';
 
 /**
  * @swagger

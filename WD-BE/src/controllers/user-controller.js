@@ -1,5 +1,3 @@
-import User from '../models/user-model.js';
-import controllerFactory from '../utils/controller-factory.js';
 
 /**
  * @swagger
@@ -315,12 +313,57 @@ import controllerFactory from '../utils/controller-factory.js';
  *         $ref: '#/components/responses/UserNotFoundError'
  */
 
-const { 
-  getAll: getUsers,
-  getOne: getUser,
-  createOne: createUser,
-  updateOne: updateUser,
-  deleteOne: deleteUser
-} = controllerFactory(User, 'users');
+
+const getUsers = async (request, response, next) => {
+  try {
+    const users = await request.app.locals.services.user.findAll();
+    response.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const getUser = async (request, response, next) => {
+  try {
+    const user = await request.app.locals.services.user.findById(request.params.id);
+    response.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const createUser = async (request, response, next) => {
+  try {
+    const user = await request.app.locals.services.user.create(request.body);
+    response.status(201).json(user);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const updateUser = async (request, response, next) => {
+  try {
+    const user = await request.app.locals.services.user.update(
+      request.params.id,
+      request.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    response.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const deleteUser = async (request, response, next) => {
+  try {
+    await request.app.locals.services.user.delete(request.params.id);
+    response.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+}
 
 export { getUsers, getUser, createUser, updateUser, deleteUser };
