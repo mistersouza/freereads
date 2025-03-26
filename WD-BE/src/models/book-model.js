@@ -63,18 +63,19 @@ import mongoose from 'mongoose';
 const bookSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: [true, "No title, no tale! Let's add one"],
+        required: [true, "Title is required"],
         trim: true,
     },
     author: {
         type: String,
-        required: [true, "No ghostwriters here! Drop the author's name."],
+        required: [true, "Author is required"],
         trim: true,
     },
     releaseYear: {
         type: Number,
         required: true,
         min: 0,
+        max: new Date().getFullYear(),
     },
     genre: {
         type: String,
@@ -85,7 +86,6 @@ const bookSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        unique: true,
     },
     description: {
         type: String,
@@ -107,8 +107,8 @@ const bookSchema = new mongoose.Schema({
     hubs: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            required: [true, 'Give this book a home!'],
             ref: 'Hub',
+            required: [true, 'Hub is required'],
         }
     ]
 }, {
@@ -136,8 +136,10 @@ const bookSchema = new mongoose.Schema({
  */
 bookSchema.pre('save', async function (next) {
     const book = this;
+    
     if (!book.isModified('copies')) return next();
     book.isAvailable = this.copies > 0;
+    
     next();
 });
 

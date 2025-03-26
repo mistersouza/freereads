@@ -9,7 +9,6 @@ import { body } from 'express-validator';
  * @property {Function} password - Validates password strength and complexity
  */
 const userRules = {
-  // Email validation
   email: body('email')
     .trim()
     .isString()
@@ -18,8 +17,6 @@ const userRules = {
     .bail()
     .isEmail()
     .withMessage('Oops! That email doesn\'t look right. Check it out.'),
-  
-  // Password validation
   password: body('password')
     .isString()
     .notEmpty()
@@ -32,10 +29,32 @@ const userRules = {
     .withMessage(
       'Security Check! Make it strong: 8+ chars, a mix of upper & lowercase, a number, and a special symbol'
     ),
+    role: body('role')
+    .optional()
+    .isIn(['member', 'boss', 'overlord'])
+    .withMessage('Pick wisely: Role must be \'member\', \'boss\', or \'overlord\'.'),
 };
 
 /**
- * Book form input validation rules powered by express-validator.
+ * Rock-solid Hub form validation
+ * 
+ * Ensures that hub entries have a street and postcode.
+ * @constant
+ * @type {Object}
+ */
+const hubRules = {
+  street: body('street')
+    .trim()
+    .notEmpty()
+    .withMessage("Don't leave me lost — add a street!"),
+  postcode: body('postcode')
+    .trim()
+    .notEmpty()
+    .withMessage('Zip it up! We need that postcode.'),
+};
+
+/**
+ * Sharp-eyed validation for flawless book entries
  * 
  * Ensures that book entries have a title, author, and are assigned to at least one hub.
  * @constant
@@ -46,19 +65,24 @@ const bookRules = {
     .trim()
     .notEmpty()
     .withMessage("No title, no tale! Let's add one."),
-
   author: body('author')
     .trim()
     .notEmpty()
     .withMessage("No ghostwriters here! Drop the author's name."),
-
+  isbn: body('isbn')
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage('If you’re adding an ISBN, make sure it’s legit!')
+    .matches(/^(?:\d[- ]?){9}[\dXx]$|^(?:\d[- ]?){12}\d$/)
+    .withMessage('ISBN not valid. Try another again!'),
   hubs: body('hubs')
     .isArray({ min: 1 })
     .withMessage('Give this book a home!'),
 };
 
 /**
- * Validation rules for seamless book scanning and identification
+ * Seamless book recognition—powered by sharp validation
  * 
  * Defines express-validator rules for image URL and ISBN validation.
  * @type {Object} scanRules - Contains validation rules for book scanning inputs
@@ -67,7 +91,6 @@ const bookRules = {
  * @property {Function} check - Custom validation to ensure either image URL or ISBN is provided
  */
 const scanRules = {
-  // Image URL validation
   imageUrl: body('imageUrl')
     .optional()
     .trim()
@@ -76,7 +99,6 @@ const scanRules = {
     .isURL()
     .withMessage('Bad link? Drop an ISBN instead!'),
 
-  // ISBN validation
   isbn: body('isbn')
     .optional()
     .trim()
@@ -94,4 +116,4 @@ const scanRules = {
   })
 };
 
-export { userRules, bookRules, scanRules };
+export { bookRules, hubRules, scanRules, userRules };
