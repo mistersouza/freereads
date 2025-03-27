@@ -6,7 +6,7 @@ import { log } from '../errors/index.js';
  * 
  * @returns {Object} An object containing initialized services from request control and book finder
  */
-const kickstart = async () => {
+const bootstrapServices = async () => {
     try {
         return await initializeServices();
     }
@@ -16,4 +16,4 @@ const kickstart = async () => {
     }
 };
 
-export { kickstart };
+export { bootstrapServices };

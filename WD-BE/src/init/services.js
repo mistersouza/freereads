@@ -2,14 +2,16 @@ import { connectDB } from '../infrastructure/database/index.js';
 import { log } from '../errors/index.js';
 import { connectRedis, setRemoteStore } from '../infrastructure/redis/index.js';
 import { initializeRequestControl } from '../services/request-control/index.js';
-import { initializeBookFinder } from '../services/book/index.js';
 import { initializeUserService } from '../services/user/index.js';
 import { initializeBlacklist } from '../services/blacklist/index.js';
+import { initializeModelOps } from '../services/model/index.js';
+import { initializeBookService } from '../services/book/index.js';
+import { initializeHubService } from '../services/hub/index.js';
 
 /**
- * Initializes core services for the application, including Redis connection and rate limiting.
+ * Spins up the backbone services
  * 
- * @returns {Promise<{rateLimiter: object, speedLimiter: object}>} An object containing configured rate limiters
+ * @returns {Promise<{rateLimiter: object, speedLimiter: object}>} An object containing configured services
  * @throws {Error} Throws an error if service initialization fails
  */
 const initializeServices = async () => {
@@ -18,16 +20,16 @@ const initializeServices = async () => {
         await connectDB();
         // Connect to Redis
         await connectRedis();
-        
         // Create remote store for rate limiting
         const store = setRemoteStore()?.store || null;
 
-        // Initialize request control services
+        // Initialize core services
         return {
-            ...initializeRequestControl(store),
-            ...initializeBookFinder(),
-            ...initializeUserService(),
-            ...await initializeBlacklist(),
+            blacklist: await initializeBlacklist(),
+            book: initializeBookService(),
+            hub: initializeHubService(),
+            requestControl: initializeRequestControl(store),
+            user: initializeUserService(),
         };
     } catch (error) {
         log.error(error);

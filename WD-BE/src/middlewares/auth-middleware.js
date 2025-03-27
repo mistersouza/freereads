@@ -12,7 +12,7 @@ import { getResourceName } from '../errors/index.js';
  */
 const authorizeAccess = ({ roles = ['boss', 'overlord'], model = null } = {}) => [
     (request, response, next) => (
-        request.app.locals.services
+        request.app.locals.services.user
             .loadAuthenticatedUser(request, response, next)
     ),
     async (request, response, next) => {

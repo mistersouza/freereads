@@ -16,10 +16,9 @@ import {
 const scanBook = async (request, response, next) => {
     try {
       const { imageUrl, isbn } = request.body;
-      const { services } = request.app.locals;
 
       const fetchBookDetails = async (isbn) => {
-        const bookDetails = await services.isbnLookup(isbn);
+        const bookDetails = await request.app.locals.services.book.isbnLookup(isbn);
         if (!bookDetails) {
           throw new ApiError(404, getResourceName(request));
         }
@@ -32,7 +31,7 @@ const scanBook = async (request, response, next) => {
       }
 
       // Fallback on the paid service last 
-      const scannedIsbn = await services.scanForISBN(imageUrl);
+      const scannedIsbn = await request.app.locals.services.book.scanForISBN(imageUrl);
       if (!scannedIsbn) {
         throw new BusinessValidationError(
           getResourceName(request),

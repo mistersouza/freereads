@@ -1,17 +1,19 @@
 import express from 'express';
 import cors from 'cors';
 
-import { ENV } from './config/env.js';
 import { corsOptions } from './config/cors.js';
 import { swaggerDocs } from './config/swagger.js';
+import { ENV } from './config/env.js';
+
 import { log } from './errors/index.js';
-import { kickstart } from './init/index.js';
+import { bootstrapServices } from './init/index.js';
 
 import scanBookRouter from './routes/scan-router.js';
 import authRouter from './routes/auth-router.js';
 import userRouter from './routes/user-router.js';
 import bookRouter from './routes/book-router.js';
 import hubRouter from './routes/hub-router.js';
+
 import { limitTraffic } from './middlewares/limit-middleware.js';
 import { throttleBlacklist } from './middlewares/blacklist-middleware.js';
 
@@ -26,7 +28,7 @@ app.use(log.httpRequest());
 // Enable Swagger docs
 swaggerDocs(app);
 // Boot up app
-const services = await kickstart();
+const services = await bootstrapServices();
 // Expose services to routes
 app.locals.services = services;
 
