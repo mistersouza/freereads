@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import User from '../models/user-model.js';
 import { ApiError, getResourceName } from '../errors/index.js';
-import { generateToken } from '../utils/jwt-handler.js';
 
 /**
  * @swagger
@@ -124,7 +123,7 @@ const register = async (request, response, next) => {
         session.endSession();
 
         response.status(201).json({
-            token: generateToken(user),
+            token: request.app.locals.services.jwt.issueToken(user),
             user: { email: user.email, role: user.role }
         });
     } catch (error) {
@@ -236,7 +235,6 @@ const register = async (request, response, next) => {
  */
 const login = async (request, response, next) => {
     const { email, password } = request.body;
-    const { services } = request.app.locals;
 
     try {
         const user = await User.findOne({ email }).select('+hashedPassword');
@@ -248,7 +246,7 @@ const login = async (request, response, next) => {
         }
 
         if (!await user.comparePassword(password)) {
-            await services.recordFailedLogin(request.ip);
+            await request.app.locals.services.blacklist.recordFailedLogin(request.ip);
             throw new ApiError(
                 401,
                 getResourceName(request)
@@ -256,7 +254,7 @@ const login = async (request, response, next) => {
         }
 
         response.json({
-            token: generateToken(user),
+            token: request.app.locals.services.jwt.issueToken(user),
             user: { email, role: user.role }
         });
     } catch (error) {

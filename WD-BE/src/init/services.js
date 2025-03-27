@@ -7,6 +7,7 @@ import { initializeBlacklist } from '../services/blacklist/index.js';
 import { initializeModelOps } from '../services/model/index.js';
 import { initializeBookService } from '../services/book/index.js';
 import { initializeHubService } from '../services/hub/index.js';
+import { initializeJwtService } from '../services/jwt/index.js';
 
 /**
  * Spins up the backbone services
@@ -28,6 +29,7 @@ const initializeServices = async () => {
             blacklist: await initializeBlacklist(),
             book: initializeBookService(),
             hub: initializeHubService(),
+            jwt: initializeJwtService(),
             requestControl: initializeRequestControl(store),
             user: initializeUserService(),
         };
