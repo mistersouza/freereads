@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import { normalizeError, BOOK_ERROR_MESSAGES } from '../errors/index.js';
 import {
-    getAllBooks,
+    getBooks,
     getBook,
-    createBook,
-    updateBook,
+    updateOrInsertBook,
     deleteBook,
 } from '../controllers/book-controller.js';
 
@@ -17,12 +16,11 @@ import {
 const router = Router();
 
 router.route('/')
-    .get(getAllBooks)
-    .post(createBook);
+    .get(getBooks)
+    .put(updateOrInsertBook);
 
 router.route('/:id')
     .get(getBook)
-    .patch(updateBook)
     .delete(deleteBook);
 
 // Error handling middleware

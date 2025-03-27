@@ -1,6 +1,3 @@
-import controllerFactory from '../utils/controller-factory.js';
-import Book from '../models/book-model.js';
-
 /**
  * @swagger
  * components:
@@ -305,12 +302,40 @@ import Book from '../models/book-model.js';
  *         $ref: '#/components/responses/BookNotFoundError'
  */
 
-const {
-    getAll: getAllBooks,
-    getOne: getBook,
-    createOne: createBook,
-    updateOne: updateBook,
-    deleteOne: deleteBook
-} = controllerFactory(Book, 'books');
+const getBooks = async (request, response, next) => {
+    try {
+        const books = await request.app.locals.services.book.findAll();
+        response.status(200).json(books);
+    } catch (error) {
+        next(error);
+    }
+};
 
-export { getAllBooks, getBook, createBook, updateBook, deleteBook };
+const getBook = async (request, response, next) => {
+    try {
+        const book = await request.app.locals.services.book.findById(request.params.id);
+        response.status(200).json(book);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateOrInsertBook = async (request, response, next) => {
+    try {
+        const book = await request.app.locals.services.book.updateOrInsert(request.body);
+        response.status(200).json(book);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const deleteBook = async (request, response, next) => {
+    try {
+        await request.app.locals.services.book.delete(request.params.id);
+        response.status(204).end();
+    } catch (error) {
+        next(error);
+    }
+};
+
+export { getBooks, getBook, updateOrInsertBook, deleteBook };
