@@ -1,19 +1,22 @@
-import { verifyToken } from '../../utils/jwt-handler.js';
-import { JwtError } from '../../errors/index.js';
+import { JwtError } from '../errors/index.js';
 
 /**
- * Middleware to authenticate a user based on JWT.
+ * JWT-powered authentication
+ * 
  * @param {boolean} authenticate - Whether authentication is required
  */
 const authenticateUser = (authenticate) => (request, response, next) => {
-    if (!request.headers.authorization?.startsWith('Bearer ')) {
+    const token = request.app.locals.services.jwt
+        .extractToken(request.headers.authorization);
+
+    if (!token) {
         return authenticate 
             ? next(JwtError.missing()) 
             : next();
     }
 
     try {
-        request.user = verifyToken(request.headers.authorization.split(' ')[1]);
+        request.user = request.app.locals.services.jwt.verifyToken(token);
         next();
     } catch (error) {
         return authenticate 
@@ -22,4 +25,7 @@ const authenticateUser = (authenticate) => (request, response, next) => {
     }
 };
 
-export { authenticateUser };
+const loadAuthenticatedUser = authenticateUser(true);
+const loadAuthorizedUser = authenticateUser(false);
+
+export { loadAuthenticatedUser, loadAuthorizedUser };

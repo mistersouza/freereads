@@ -1,5 +1,6 @@
 import { ApiError } from '../errors/index.js';
 import { getResourceName } from '../errors/index.js';
+import { loadAuthenticatedUser } from './authenticate-user.js';
 
 /**
  * Generates middleware to control access based on roles or ownership
@@ -11,10 +12,7 @@ import { getResourceName } from '../errors/index.js';
  * @throws {ApiError} When authorization fails due to insufficient permissions
  */
 const authorizeAccess = ({ roles = ['boss', 'overlord'], model = null } = {}) => [
-    (request, response, next) => (
-        request.app.locals.services.user
-            .loadAuthenticatedUser(request, response, next)
-    ),
+    loadAuthenticatedUser,
     async (request, response, next) => {
         const { user } = request;
         if (roles.includes(user.role)) return next();
