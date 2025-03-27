@@ -2,8 +2,8 @@ import { Router } from 'express';
 import { authorizeAccess } from '../middlewares/auth-middleware.js';
 import { normalizeError, HUB_ERROR_MESSAGES } from '../errors/index.js';
 import { 
-    getAllHubs,
-    getOneHub,
+    getHubs,
+    getHub,
     createHub,
     updateHub,
     deleteHub 
@@ -17,14 +17,14 @@ import {
  */
 const router = Router();
 
-router.route('/')
-    .get(getAllHubs)
-    .post(authorizeAccess(['overlord']), createHub);
+// Open to All (Public Routes)
+router.get('/', getHubs);
+router.get('/:id', getHub);
 
-router.route('/:id')
-    .get(getOneHub)
-    .put(authorizeAccess(['overlord', 'boss']), updateHub)
-    .delete(authorizeAccess(['overlord']), deleteHub);
+// Elite Access Only (Restricted Routes)
+router.post('/', authorizeAccess(['overlord', 'boss']), createHub);
+router.put('/:id', authorizeAccess(['overlord', 'boss']), updateHub);
+router.delete('/:id', authorizeAccess(['overlord']), deleteHub);
 
 // Error handling middleware
 router.use(normalizeError(HUB_ERROR_MESSAGES));
