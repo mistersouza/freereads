@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { normalizeError, BOOK_ERROR_MESSAGES } from '../errors/index.js';
+import { BOOK_ERROR_MESSAGES } from '../services/error/constants.js';
+import { handleError } from '../services/error/handler.js';
 import {
     getBooks,
     getBook,
@@ -24,6 +25,6 @@ router.route('/:id')
     .delete(deleteBook);
 
 // Error handling middleware
-router.use(normalizeError(BOOK_ERROR_MESSAGES));
+router.use(handleError(BOOK_ERROR_MESSAGES));
 
 export default router;
