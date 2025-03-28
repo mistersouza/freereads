@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { register, login } from '../controllers/auth-controller.js';
-import { normalizeError, AUTH_ERROR_MESSAGES } from '../errors/index.js';
+import { AUTH_ERROR_MESSAGES } from '../services/error/constants.js';
 import { validateMember } from '../middlewares/validate-middleware.js';
+import { handleError } from '../services/error/handler.js';
 
 /**
  * @swagger
@@ -11,10 +12,11 @@ import { validateMember } from '../middlewares/validate-middleware.js';
  */
 const router = Router();
 
-router.post('/register', validateMember, register);
-router.post('/login', validateMember, login);
+router.use(validateMember);
 
-// Error handling middleware
-router.use(normalizeError(AUTH_ERROR_MESSAGES));
+router.post('/register', register);
+router.post('/login', login);
+
+router.use(handleError(AUTH_ERROR_MESSAGES));
 
 export default router;

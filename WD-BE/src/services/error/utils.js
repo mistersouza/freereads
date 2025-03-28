@@ -1,39 +1,22 @@
 /**
- * Keeps error properties sleek and consistent.
- * 
- * @param {Error} error - The error object to modify
- * @param {number} statusCode - HTTP status code
- * @param {string} status - Error status (e.g., 'fail', 'error')
- * @param {string} message - Human-readable error message
- */
-const setError = (error, statusCode, status, message) => {
-    error.statusCode = statusCode;
-    error.status = status;
-    error.message = message;
-    return error;
-};
-
-/**
  * Pulls out only the resource name from the request 
  * 
  * @param {Object} request - Express request object
  * @returns {string} Resource name (e.g., 'books', 'users', 'auth')
  */
 const getResourceName = (request) => {
+  // Get the complete URL path (originalUrl includes baseUrl + path)
   const fullPath = request.originalUrl || '';
-
+  
+  // Split the path and remove empty segments
   const segments = fullPath.split('/').filter(Boolean);
   
+  // For API routes with pattern /api/v1/resource/...
   if (segments.length >= 3 && segments[0] === 'api' && segments[1].startsWith('v')) {
-    return segments[2] || 'none';
+    return segments[2] || 'unknown';
   }
   
-  // For non-versioned routes, fall back to the previous logic
-  const baseUrl = request.baseUrl || '';
-  const baseSegments = baseUrl.split('/').filter(Boolean);
-  const resourceName = baseSegments[baseSegments.length - 1];
-  
-  return resourceName || 'none';
+  return 'default';
 };
 
-export { setError, getResourceName };
+export { getResourceName };

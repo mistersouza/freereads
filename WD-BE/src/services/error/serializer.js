@@ -7,22 +7,20 @@ import { ENV } from '../../config/env.js';
 * @param {boolean} includeStack - Whether to include stack trace
 * @returns {Object} Serialized error object
 */
-const serializeError = (error, logErrorStack = ENV.NODE_ENV === 'development') => {
-  const metadata = {
+const serializeError = (error) => {
+  const logErrorStack = ENV.NODE_ENV === 'development';
+
+  return {
     statusCode: error.statusCode || error.status || 500,
-    code: error.code,
     name: error.name || 'Error',
-    message: error.message || 'Unknown error',
-    errorType: error.errorType || 'unknown'
+    message: error.message || 'Something went wrong.',
+    errorType: error.errorType || 'unknown',
+    context: error.context ?? undefined,
+    summary: error.summary ?? undefined,
+    fields: error.fields ?? undefined,
+    validation: error.errors ?? undefined,
+    ...(logErrorStack && { stack: error.stack })
   };
-
-  if (error.context) metadata.context = error.context;
-  if (error.summary) metadata.summary = error.summary;
-  if (error.fields) metadata.fields = error.fields;
-  if (logErrorStack) metadata.stack = error.stack;
-  if (error.errors) metadata.validation = error.errors;
-
-  return metadata;
 };
 
 export { serializeError };

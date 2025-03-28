@@ -13,8 +13,7 @@ const formatResponse = (error, request, response) => {
     log.error(error);
     
     try {
-        const metadata = serializeError(error);
-
+        const {stack, ...metadata} = serializeError(error);
         const errorResponse = {
             ...metadata,
             method: request.method || 'UNKNOWN',

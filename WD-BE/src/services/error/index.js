@@ -15,11 +15,8 @@ export {
     InputValidationError,
     JwtError,
     
-    // Error handling functionality
+    // Handler
     handleError,
-    
-    // Constants
-    DEFAULT_ERROR_MESSAGES,
     
     // Logger
     log

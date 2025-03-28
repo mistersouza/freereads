@@ -1,8 +1,10 @@
 import { ApiError } from "./api.js";
 /**
- * Business Validation Error - for business rule violations
+ * Business Rule Breach – Validation Error
+ * @extends ApiError
  */
 class BusinessValidationError extends ApiError {
+
   /**
    * @param {string} resourceName - The resource where the validation occurred
    * @param {Object} [options={}] - Configuration options
@@ -13,13 +15,11 @@ class BusinessValidationError extends ApiError {
   constructor(resourceName, options = {}) {
     const {
       statusCode = 400,
-      message = 'Business validation failed.',
       context = {}
     } = options;
 
     super(statusCode, resourceName);
     this.name = 'BusinessValidationError';
-    this.message = message;
     this.errorType = 'business';
     this.context = {
       domain: resourceName,
@@ -28,7 +28,7 @@ class BusinessValidationError extends ApiError {
   }
   
   /**
-   * Create a permission denied error
+   * Permission Error
    * @param {string} resourceName - The resource being accessed
    * @param {string} [message] - Optional custom message
    * @returns {BusinessValidationError} Error with 403 status code
@@ -36,13 +36,12 @@ class BusinessValidationError extends ApiError {
   static forbidden(resourceName, message) {
     return new BusinessValidationError(resourceName, {
       statusCode: 403,
-      message: message || 'You don\'t have permission to perform this action.',
       context: { issue: 'permission' }
     });
   }
-  
+
   /**
-   * Create a conflict error
+   * Conflict error
    * @param {string} resourceName - The resource with conflict
    * @param {string} [message] - Optional custom message
    * @returns {BusinessValidationError} Error with 409 status code
@@ -50,8 +49,34 @@ class BusinessValidationError extends ApiError {
   static conflict(resourceName, message) {
     return new BusinessValidationError(resourceName, {
       statusCode: 409,
-      message: message || 'This operation would create a conflict.',
       context: { issue: 'conflict' }
+    });
+  }
+
+  /**
+   * Not found error
+   * @param {string} resourceName - The resource not found
+   * @param {string} [message] - Optional custom message
+   * @returns {BusinessValidationError} Error with 404 status code
+   */
+  static notFound(resourceName, message) {
+    return new BusinessValidationError(resourceName, {
+      statusCode: 404,
+      context: { issue: 'not_found' }
+    });
+  }
+  
+  /**
+   * Unauthorized error
+   * @param {string} resourceName - The resource requiring authorization
+   * @param {string} [message] - Optional custom message
+   * @returns {BusinessValidationError} Error with 401 status code
+   */
+  static unauthorized(resourceName, message) {
+    return new BusinessValidationError(resourceName, {
+      statusCode: 401,
+      message: message,
+      context: { issue: 'authentication' }
     });
   }
 }

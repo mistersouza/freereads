@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import User from '../models/user-model.js';
 import { ApiError, getResourceName } from '../errors/index.js';
+import { BusinessValidationError } from '../services/error/classes/index.js';
 
 /**
  * @swagger
@@ -68,17 +69,36 @@ import { ApiError, getResourceName } from '../errors/index.js';
  *             schema:
  *               type: object
  *               properties:
- *                 status:
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 409
+ *                 name:
  *                   type: string
- *                   example: fail
+ *                   example: BusinessValidationError
  *                 message:
  *                   type: string
  *                   example: We've seen you before! Try logging in instead.
+ *                 errorType:
+ *                   type: string
+ *                   example: business
+ *                 context:
+ *                   type: object
+ *                   properties:
+ *                     domain:
+ *                       type: string
+ *                       example: auth
+ *                     issue:
+ *                       type: string
+ *                       example: conflict
+ *                 method:
+ *                   type: string
+ *                   example: POST
+ *                 path:
+ *                   type: string
+ *                   example: /api/v1/auth/register
  *                 timestamp:
  *                   type: string
  *                   format: date-time
- *                 path:
- *                   type: string
  *       500:
  *         description: Server error
  *         content:
@@ -86,17 +106,27 @@ import { ApiError, getResourceName } from '../errors/index.js';
  *             schema:
  *               type: object
  *               properties:
- *                 status:
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 500
+ *                 name:
  *                   type: string
- *                   example: error
+ *                   example: Error
  *                 message:
  *                   type: string
  *                   example: Bookkeeper's out! Please knock again later.
+ *                 errorType:
+ *                   type: string
+ *                   example: unknown
+ *                 method:
+ *                   type: string
+ *                   example: POST
+ *                 path:
+ *                   type: string
+ *                   example: /api/v1/auth/register
  *                 timestamp:
  *                   type: string
  *                   format: date-time
- *                 path:
- *                   type: string
  */
 
 const register = async (request, response, next) => {
@@ -108,10 +138,7 @@ const register = async (request, response, next) => {
 
         const activeAccount = await User.findOne({ email });
         if (activeAccount) {
-            throw new ApiError(
-                409,
-                getResourceName(request)
-            );
+            throw BusinessValidationError.conflict(getResourceName(request));
         }
 
         const [ user ] = await User.create(
@@ -185,17 +212,27 @@ const register = async (request, response, next) => {
  *             schema:
  *               type: object
  *               properties:
- *                 status:
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 401
+ *                 name:
  *                   type: string
- *                   example: fail
+ *                   example: ApiError
  *                 message:
  *                   type: string
  *                   example: Something's off with that email or password. Give it another go!
+ *                 errorType:
+ *                   type: string
+ *                   example: unknown
+ *                 method:
+ *                   type: string
+ *                   example: POST
+ *                 path:
+ *                   type: string
+ *                   example: /api/v1/auth/login
  *                 timestamp:
  *                   type: string
  *                   format: date-time
- *                 path:
- *                   type: string
  *       404:
  *         description: User not found
  *         content:
@@ -203,17 +240,27 @@ const register = async (request, response, next) => {
  *             schema:
  *               type: object
  *               properties:
- *                 status:
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 404
+ *                 name:
  *                   type: string
- *                   example: fail
+ *                   example: ApiError
  *                 message:
  *                   type: string
  *                   example: No luck! That username's off the grid. Try registering instead.
+ *                 errorType:
+ *                   type: string
+ *                   example: unknown
+ *                 method:
+ *                   type: string
+ *                   example: POST
+ *                 path:
+ *                   type: string
+ *                   example: /api/v1/auth/login
  *                 timestamp:
  *                   type: string
  *                   format: date-time
- *                 path:
- *                   type: string
  *       500:
  *         description: Server error
  *         content:
@@ -221,17 +268,27 @@ const register = async (request, response, next) => {
  *             schema:
  *               type: object
  *               properties:
- *                 status:
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 500
+ *                 name:
  *                   type: string
- *                   example: error
+ *                   example: Error
  *                 message:
  *                   type: string
  *                   example: Bookkeeper's out! Please knock again later.
+ *                 errorType:
+ *                   type: string
+ *                   example: unknown
+ *                 method:
+ *                   type: string
+ *                   example: POST
+ *                 path:
+ *                   type: string
+ *                   example: /api/v1/auth/login
  *                 timestamp:
  *                   type: string
  *                   format: date-time
- *                 path:
- *                   type: string
  */
 const login = async (request, response, next) => {
     const { email, password } = request.body;
@@ -239,18 +296,12 @@ const login = async (request, response, next) => {
     try {
         const user = await User.findOne({ email }).select('+hashedPassword');
         if (!user) {
-            throw new ApiError(
-                404,
-                getResourceName(request)
-            );
+            throw BusinessValidationError.notFound(getResourceName(request));
         }
 
         if (!await user.comparePassword(password)) {
             await request.app.locals.services.blacklist.recordFailedLogin(request.ip);
-            throw new ApiError(
-                401,
-                getResourceName(request)
-            );
+            throw BusinessValidationError.unauthorized(getResourceName(request));
         }
 
         response.json({
