@@ -30,10 +30,9 @@ class BusinessValidationError extends ApiError {
   /**
    * Permission Error
    * @param {string} resourceName - The resource being accessed
-   * @param {string} [message] - Optional custom message
    * @returns {BusinessValidationError} Error with 403 status code
    */
-  static forbidden(resourceName, message) {
+  static forbidden(resourceName) {
     return new BusinessValidationError(resourceName, {
       statusCode: 403,
       context: { issue: 'permission' }
@@ -43,10 +42,9 @@ class BusinessValidationError extends ApiError {
   /**
    * Conflict error
    * @param {string} resourceName - The resource with conflict
-   * @param {string} [message] - Optional custom message
    * @returns {BusinessValidationError} Error with 409 status code
    */
-  static conflict(resourceName, message) {
+  static conflict(resourceName) {
     return new BusinessValidationError(resourceName, {
       statusCode: 409,
       context: { issue: 'conflict' }
@@ -56,10 +54,9 @@ class BusinessValidationError extends ApiError {
   /**
    * Not found error
    * @param {string} resourceName - The resource not found
-   * @param {string} [message] - Optional custom message
    * @returns {BusinessValidationError} Error with 404 status code
    */
-  static notFound(resourceName, message) {
+  static notFound(resourceName) {
     return new BusinessValidationError(resourceName, {
       statusCode: 404,
       context: { issue: 'not_found' }
@@ -69,14 +66,24 @@ class BusinessValidationError extends ApiError {
   /**
    * Unauthorized error
    * @param {string} resourceName - The resource requiring authorization
-   * @param {string} [message] - Optional custom message
    * @returns {BusinessValidationError} Error with 401 status code
    */
   static unauthorized(resourceName, message) {
     return new BusinessValidationError(resourceName, {
       statusCode: 401,
-      message: message,
       context: { issue: 'authentication' }
+    });
+  }
+  
+  /**
+   * Unprocessable entity error
+   * @param {string} resourceName - The resource that cannot be processed
+   * @returns {BusinessValidationError} Error with 422 status code
+   */
+  static unprocessableEntity(resourceName) {
+    return new BusinessValidationError(resourceName, {
+      statusCode: 422,
+      context: { issue: 'unprocessable_entity' }
     });
   }
 }
