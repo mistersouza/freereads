@@ -1,4 +1,4 @@
-import { ApiError } from '../../errors/index.js';
+import { BusinessValidationError } from '../../services/error/classes/index.js';
 
 /**
  * Crafts a dynamic suite of database service methods.
@@ -17,7 +17,7 @@ const ops = (Model, resourceName) => ({
     findById: async (id) => {
         const data = await Model.findById(id);
         if (!data) {
-            throw new ApiError(404, resourceName);
+            throw BusinessValidationError.notFound(resourceName);
         }
         return data;
     },
@@ -27,14 +27,14 @@ const ops = (Model, resourceName) => ({
             runValidators: true,
         });
         if (!updatedData) {
-            throw new ApiError(404, resourceName);
+            throw BusinessValidationError.notFound(resourceName);
         }
         return updatedData;
     },
     delete: async (id) => {
         const data = await Model.findByIdAndDelete(id);
         if (!data) {
-            throw new ApiError(404, resourceName);
+            throw BusinessValidationError.notFound(resourceName);
         }
         return data;
     }

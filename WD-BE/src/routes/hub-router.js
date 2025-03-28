@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authorizeAccess } from '../middlewares/auth-middleware.js';
-import { normalizeError, HUB_ERROR_MESSAGES } from '../errors/index.js';
+import { HUB_ERROR_MESSAGES } from '../services/error/constants.js';
+import { handleError } from '../services/error/handler.js';
 import { 
     getHubs,
     getHub,
@@ -27,6 +28,6 @@ router.put('/:id', authorizeAccess(['overlord', 'boss']), updateHub);
 router.delete('/:id', authorizeAccess(['overlord']), deleteHub);
 
 // Error handling middleware
-router.use(normalizeError(HUB_ERROR_MESSAGES));
+router.use(handleError(HUB_ERROR_MESSAGES));
 
 export default router;
