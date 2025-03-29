@@ -1,0 +1,53 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./WD-BE
+    
+    - name: Create test env file
+      run: |
+        echo "MONGODB_URI=${{ secrets.MONGODB_URI_TEST }}" > .env.test.local
+        echo "GOOGLE_CREDENTIALS_BASE64=${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" >> .env.test.local
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.test.local
+        echo "NODE_ENV=test" >> .env.test.local
+        echo "REDIS_ENABLED=false" >> .env.test.local
+      working-directory: ./WD-BE
+    
+    - name: Run tests
+      run: npm test
+      working-directory: ./WD-BE
+      env:
+        NODE_ENV: test
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Deploy to Render
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+        clear-cache: true
