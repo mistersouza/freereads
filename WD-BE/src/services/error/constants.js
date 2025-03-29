@@ -41,6 +41,16 @@ const HUB_ERROR_MESSAGES = {
 };
 
 /**
+ * JWT error messages for various token-related scenarios.
+ * @type {Object.<string, string>}
+ */
+const JWT_ERROR_MESSAGES = {
+  'missing': 'Token\'s ghosted. Time for a new one!',
+  'expired': 'Token\'s expired. Time for a fresh one!',
+  'invalid': 'Token trouble! It\'s off.'
+};
+
+/**
  * Scanning error messages
  * @type {Object.<number|string, string>}
  */
@@ -63,6 +73,7 @@ export {
     BOOK_ERROR_MESSAGES,
     DEFAULT_ERROR_MESSAGES,
     HUB_ERROR_MESSAGES,
+    JWT_ERROR_MESSAGES,
     SCAN_ERROR_MESSAGES,
     USER_ERROR_MESSAGES
 };

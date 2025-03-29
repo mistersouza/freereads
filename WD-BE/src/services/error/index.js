@@ -7,6 +7,7 @@ import {
 import { DEFAULT_ERROR_MESSAGES } from './constants.js';
 import { log } from './logger.js';
 import { handleError } from './handler.js';
+import { getResourceName, getInputErrors } from './utils.js';
 
 export {
     // Error classes
@@ -17,6 +18,10 @@ export {
     
     // Handler
     handleError,
+    
+    // Utils
+    getResourceName,
+    getInputErrors,
     
     // Logger
     log

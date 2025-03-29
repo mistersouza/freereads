@@ -13,8 +13,8 @@ const serializeError = (error) => {
   return {
     statusCode: error.statusCode || error.status || 500,
     name: error.name || 'Error',
-    message: error.message || 'Something went wrong.',
     errorType: error.errorType || 'unknown',
+    message: error.message || 'Something went wrong.',
     context: error.context ?? undefined,
     summary: error.summary ?? undefined,
     fields: error.fields ?? undefined,

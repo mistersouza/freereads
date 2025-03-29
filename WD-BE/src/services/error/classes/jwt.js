@@ -10,11 +10,11 @@ class JwtError extends ApiError {
      * @param {string} errorType - Specific type of JWT error ('missing', 'expired', 'invalid')
      * @param {string} message - Human-readable error message to display to the client
      */
-    constructor(errorType, message) {
+    constructor(errorType) {
         super(401, 'token');
         this.errorType = errorType;
+        this.name = 'JwtError';
         this.jwtError = true;
-        this.message = message;
         Error.captureStackTrace(this, this.constructor);
     }
     
@@ -23,7 +23,7 @@ class JwtError extends ApiError {
      * @returns {JwtError} Error with 'missing' type
      */
     static missing() {
-        return new JwtError('missing', 'Token\'s ghosted. Time for a new one!');
+        return new JwtError('missing');
     }
     
     /**
@@ -31,7 +31,7 @@ class JwtError extends ApiError {
      * @returns {JwtError} Error with 'expired' type
      */
     static expired() {
-        return new JwtError('expired', 'Token\'s expired. Time for a fresh one!');
+        return new JwtError('expired');
     }
     
     /**
@@ -39,7 +39,7 @@ class JwtError extends ApiError {
      * @returns {JwtError} Error with 'invalid' type
      */
     static invalid() {
-        return new JwtError('invalid', 'Token trouble! It\'s off.');
+        return new JwtError('invalid');
     }
 }
 

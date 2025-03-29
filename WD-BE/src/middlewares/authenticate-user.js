@@ -1,4 +1,4 @@
-import { JwtError } from '../errors/index.js';
+import { JwtError } from '../services/error/classes/index.js';
 
 /**
  * JWT-powered authentication
@@ -20,7 +20,7 @@ const authenticateUser = (authenticate) => (request, response, next) => {
         next();
     } catch (error) {
         return authenticate 
-            ? next(error.expireAt ? JwtError.expiredAt() : JwtError.invalid())
+            ? next(error.expireAt ? JwtError.expired() : JwtError.invalid())
             : next();
     }
 };

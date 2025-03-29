@@ -4,7 +4,7 @@ import {
     InputValidationError, 
     JwtError,
 } from './classes/index.js';
-import { DEFAULT_ERROR_MESSAGES } from './constants.js';
+import { DEFAULT_ERROR_MESSAGES, JWT_ERROR_MESSAGES } from './constants.js';
 import { formatResponse } from './formatter.js';
 
 /**
@@ -41,8 +41,7 @@ const handleError = (ERROR_MESSAGES = {}) => {
 
         // Handle JWT authentication errors
         if (error instanceof JwtError) {
-            error.statusCode = 401;
-            // Only keeping errorType since it might be used elsewhere
+            error.message = JWT_ERROR_MESSAGES[error.errorType] || error.message;
         }
 
         // Handle mongoose invalid ID
