@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: freereads
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://your-frontend-domain.com,https://www.your-frontend-domain.com
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
+      - key: RATE_LIMIT_STRICT
+        value: 3
+      - key: RATE_LIMIT_DEFAULT
+        value: 5
+      - key: RATE_LIMIT_AUTHENTICATED
+        value: 10
+      - key: SLOW_DOWN_WINDOW_MS
+        value: 60000
+      - key: SLOW_DOWN_DELAY_AFTER
+        value: 2
+      - key: SLOW_DOWN_DELAY_MS
+        value: 500
+      - key: BLACKLIST_PREFIX
+        value: blacklist
+      - key: BLACKLIST_DURATION
+        value: 86400
+      - key: MAX_LOGIN_ATTEMPTS
+        value: 3
+      - key: MAX_API_ABUSE
+        value: 10
+      - key: ATTEMPT_RESET_TIME
+        value: 3600
+      - key: REDIS_URL
+        sync: false
+      - key: REDIS_ENABLED
+        value: true
