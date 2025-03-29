@@ -1,5 +1,5 @@
-import { ApiError } from '../errors/index.js';
-import { getResourceName } from '../errors/index.js';
+import { ApiError } from '../services/error/classes/index.js';
+import { getResourceName } from '../services/error/index.js';
 import { loadAuthenticatedUser } from './authenticate-user.js';
 
 /**

@@ -1,5 +1,5 @@
 import { redisClient } from '../../infrastructure/redis/index.js';
-import { log } from '../../errors/index.js';
+import { log } from '../../services/error/index.js';
 import { ENV } from '../../config/env.js';
 
 /**

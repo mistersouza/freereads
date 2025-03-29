@@ -1,6 +1,6 @@
 import { RedisStore } from 'rate-limit-redis';
-import { log } from '../../errors/index.js';
-import { redisClient } from './client.js';``
+import { log } from '../../services/error/index.js';
+import { redisClient } from './client.js';
 
 /**
  * Creates a Redis store for rate limiting with error handling and connection validation.

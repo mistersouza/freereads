@@ -1,4 +1,4 @@
-import { ApiError, log } from '../../errors/index.js';
+import { ApiError, log } from '../../services/error/index.js';
 
 /**
  * Grabs book details from the Google Books API.

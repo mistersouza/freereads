@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { log } from '../../errors/index.js';
+import { log } from '../../services/error/index.js';
 import { ENV } from '../../config/env.js';
 
 const connectDB = async () => {

@@ -1,6 +1,6 @@
 import  { createClient } from 'redis';
 import { ENV } from '../../config/env.js';
-import { log } from '../../errors/index.js';
+import { log } from '../../services/error/index.js';
 
 /**
  * Creates a Redis client with a configurable reconnection strategy.

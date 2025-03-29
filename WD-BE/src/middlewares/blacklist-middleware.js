@@ -1,4 +1,4 @@
-import { BusinessValidationError, getResourceName, log } from '../errors/index.js';
+import { BusinessValidationError, getResourceName, log } from '../services/error/index.js';
 
 /**
  * Block blacklisted IPs & throttling abusers.

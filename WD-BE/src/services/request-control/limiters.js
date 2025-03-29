@@ -1,7 +1,7 @@
 import { rateLimit } from 'express-rate-limit';
 import { slowDown } from 'express-slow-down';
 import { ENV } from '../../config/env.js';
-import { log } from '../../errors/index.js';
+import { log } from '../../services/error/index.js';
 import { isAuthRoute, shouldSkipRateLimit } from './helpers.js';
 
 /**

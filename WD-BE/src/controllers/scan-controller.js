@@ -3,7 +3,7 @@ import {
   ApiError,
   getResourceName,
   log 
-} from '../errors/index.js';
+} from '../services/error/index.js';
 
 /*
  * Grab book details by scanning its ISBN

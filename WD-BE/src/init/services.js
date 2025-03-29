@@ -1,5 +1,5 @@
 import { connectDB } from '../infrastructure/database/index.js';
-import { log } from '../errors/index.js';
+import { log } from '../services/error/index.js';
 import { connectRedis, setRemoteStore } from '../infrastructure/redis/index.js';
 import { initializeRequestControl } from '../services/request-control/index.js';
 import { initializeUserService } from '../services/user/index.js';

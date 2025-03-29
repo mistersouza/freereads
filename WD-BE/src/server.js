@@ -5,7 +5,7 @@ import { corsOptions } from './config/cors.js';
 import { swaggerDocs } from './config/swagger.js';
 import { ENV } from './config/env.js';
 
-import { log } from './errors/index.js';
+import { log } from './services/error/index.js';
 import { bootstrapServices } from './init/index.js';
 
 import scanBookRouter from './routes/scan-router.js';

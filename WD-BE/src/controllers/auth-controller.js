@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import User from '../models/user-model.js';
-import { ApiError, getResourceName } from '../errors/index.js';
+import { ApiError, getResourceName } from '../services/error/index.js';
 import { BusinessValidationError } from '../services/error/classes/index.js';
 
 /**

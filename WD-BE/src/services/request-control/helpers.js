@@ -1,6 +1,6 @@
 import { isIP } from 'net';
 import { ENV } from '../../config/env.js';
-import { log } from '../../errors/index.js';
+import { log } from '../../services/error/index.js';
 
 const isAuthRoute = (path) => /^\/api\/v1\/auth\/?.*$/i.test(path);
 

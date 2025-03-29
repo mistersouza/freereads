@@ -1,5 +1,5 @@
 import { initializeServices } from './services.js';
-import { log } from '../errors/index.js';
+import { log } from '../services/error/index.js';
 
 /**
  * Initializes core application services for request control and book finding.
