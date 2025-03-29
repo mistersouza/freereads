@@ -2,6 +2,18 @@ import { config } from 'dotenv';
 
 config({ path: `.env.${process.env.NODE_ENV || 'development'}.local` });
 
+if (process.env.GOOGLE_CREDENTIALS_BASE64) {
+  try {
+    const credentials = Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString('utf-8');
+    fs.writeFileSync('./src/config/google-credentials.json', credentials);
+    console.log('Google credentials file created from environment variable');
+    // Set the path to the credentials file
+    process.env.GOOGLE_CREDENTIALS = './src/config/google-credentials.json';
+  } catch (error) {
+    console.error('Failed to create Google credentials file:', error);
+  }
+}
+
 export const ENV = {
     // Environment
     NODE_ENV: process.env.NODE_ENV || 'development',
