@@ -22,9 +22,11 @@ class InputValidationError extends ApiError {
     this.name = 'InputValidationError';
     this.message = message;
     this.errorType = 'validation';
+    this.context = {
+      domain: resourceName,
+    };
     this.fields = fields;
     
-    // Create summary of failed fields
     if (Object.keys(fields).length) {
       this.summary = {
         fields: Object.keys(fields),
@@ -40,14 +42,9 @@ class InputValidationError extends ApiError {
    * @returns {InputValidationError} Validation error with fields populated
    */
   static requiredField(resourceName, requiredFields) {
-    const fields = requiredFields.reduce((acc, field) => {
-      acc[field] = 'This field is required';
-      return acc;
-    }, {});
-    
     return new InputValidationError(resourceName, {
       message: 'Required fields are missing.',
-      fields
+      fields: requiredFields
     });
   }
   
@@ -59,7 +56,7 @@ class InputValidationError extends ApiError {
    */
   static invalidFormat(resourceName, invalidFields) {
     return new InputValidationError(resourceName, {
-      message: 'Some fields have invalid format.',
+      message: 'Invalid formats.',
       fields: invalidFields
     });
   }

@@ -1,35 +1,27 @@
 import { body } from 'express-validator';
 
+
 /**
  * Authentication field validation rules to keep things secure.
- * 
- * Defines express-validator rules for email and password validation.
- * @type {Object} userRules - Contains validation rules for email and password fields
- * @property {Function} email - Validates email format and presence
- * @property {Function} password - Validates password strength and complexity
  */
 const userRules = {
   email: body('email')
-    .trim()
-    .isString()
-    .notEmpty()
-    .withMessage('Drop your email to continue.')
+    .exists().withMessage('[REQUIRED] Drop your email to continue.')
     .bail()
-    .isEmail()
-    .withMessage('Oops! That email doesn\'t look right. Check it out.'),
+    .notEmpty().withMessage('[REQUIRED] Drop your email to continue.')
+    .bail()
+    .isEmail().withMessage('Oops! That email doesn\'t look right. Check it out.'),
+    
   password: body('password')
-    .isString()
-    .notEmpty()
-    .withMessage('Type in a password to move forward.')
+    .exists().withMessage('[REQUIRED] Type in a password to move forward.')
     .bail()
-    .isLength({ min: 8 })
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/
-    )
-    .withMessage(
-      'Security Check! Make it strong: 8+ chars, a mix of upper & lowercase, a number, and a special symbol'
-    ),
-    role: body('role')
+    .notEmpty().withMessage('[REQUIRED] Type in a password to move forward.')
+    .bail()
+    .isLength({ min: 8 }).withMessage('Security Check! Make it strong: 8+ chars, a mix of upper & lowercase, a number, and a special symbol')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/)
+    .withMessage('Security Check! Make it strong: 8+ chars, a mix of upper & lowercase, a number, and a special symbol'),
+    
+  role: body('role')
     .optional()
     .isIn(['member', 'boss', 'overlord'])
     .withMessage('Pick wisely: Role must be \'member\', \'boss\', or \'overlord\'.'),

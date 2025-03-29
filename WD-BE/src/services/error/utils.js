@@ -5,13 +5,10 @@
  * @returns {string} Resource name (e.g., 'books', 'users', 'auth')
  */
 const getResourceName = (request) => {
-  // Get the complete URL path (originalUrl includes baseUrl + path)
   const fullPath = request.originalUrl || '';
   
-  // Split the path and remove empty segments
   const segments = fullPath.split('/').filter(Boolean);
   
-  // For API routes with pattern /api/v1/resource/...
   if (segments.length >= 3 && segments[0] === 'api' && segments[1].startsWith('v')) {
     return segments[2] || 'unknown';
   }
@@ -19,4 +16,34 @@ const getResourceName = (request) => {
   return 'default';
 };
 
-export { getResourceName };
+/**
+ * Refines validation errors, distinguishing between missing fields and format issues
+ * 
+ * @param {Array} errors - Array of validation errors from express-validator
+ * @returns {Object} Object containing categorized errors
+ */
+const getInputErrors = (errors) => {
+  const hasRequiredFieldErrors = errors.some(error => 
+    error.msg && error.msg.startsWith('[REQUIRED]')
+  );
+  
+  if (hasRequiredFieldErrors) {
+    return {
+      isFieldError: true,
+      isFormatError: false,
+      requiredFields: Object.fromEntries(
+        errors
+          .filter(error => error.msg && error.msg.startsWith('[REQUIRED]'))
+          .map(error => [error.path, error.msg.replace('[REQUIRED] ', '')])
+      ),
+    };
+  }
+
+  return {
+    isFieldError: false,
+    isFormatError: true,
+    formatErrors: Object.fromEntries(errors.map(error => [error.path, error.msg])),
+  };
+};
+
+export { getResourceName, getInputErrors };
