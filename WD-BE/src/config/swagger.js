@@ -6,14 +6,14 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Free Reads API',
+      title: 'freereads API',
       version: '1.0.0',
-      description: 'FreeReads API documentation'
+      description: 'API documentation'
     },
     servers: [
       {
         url: process.env.NODE_ENV === 'production' 
-          ? 'https://api.freereads.com' 
+          ? 'https://freereads-lof1.onrender.com' 
           : process.env.PORT || 'http://localhost:5500',
         description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
       }
@@ -33,12 +33,13 @@ const swaggerDocs = (app) => {
     swaggerOptions: {
       persistAuthorization: true,
       defaultModelsExpandDepth: -1
-    }
+    },
+    customCss: '.swagger-ui .topbar { background-color:rgb(50, 51, 53); } .swagger-ui .info .title { color: #3f51b5; } .swagger-ui .btn.execute { background-color: #4CAF50; }',
+    customSiteTitle: "Free Reads API Documentation",
+    customfavIcon: "https://example.com/favicon.ico"
   };
   
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, uiOptions));
-  
-  console.log(`Swagger docs available at /api-docs`);
+  app.use('/', swaggerUi.serve, swaggerUi.setup(specs, uiOptions));
 };
 
 export { swaggerDocs };
