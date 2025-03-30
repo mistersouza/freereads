@@ -6,6 +6,107 @@ import { BusinessValidationError } from '../services/error/classes/index.js';
 /**
  * @swagger
  * components:
+ *   schemas:
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         statusCode:
+ *           type: integer
+ *           description: HTTP status code
+ *         name:
+ *           type: string
+ *           description: Error class name (ApiError, BusinessValidationError, InputValidationError, JwtError)
+ *         message:
+ *           type: string
+ *           description: User-friendly error message
+ *         errorType:
+ *           type: string
+ *           enum: [unknown, api, business, validation, missing, expired, invalid]
+ *           description: Category of error
+ *         context:
+ *           type: object
+ *           properties:
+ *             domain:
+ *               type: string
+ *               description: Resource area where error occurred (auth, books, etc.)
+ *             issue:
+ *               type: string
+ *               enum: [permission, conflict, not_found, authentication, unprocessable_entity]
+ *               description: Specific issue type for business errors
+ *         fields:
+ *           type: object
+ *           description: Field-specific validation errors (for InputValidationError)
+ *         summary:
+ *           type: object
+ *           properties:
+ *             fields:
+ *               type: array
+ *               items:
+ *                 type: string
+ *             count:
+ *               type: integer
+ *           description: Summary of validation errors
+ *         validation:
+ *           type: object
+ *           description: Validation errors from Mongoose
+ *         method:
+ *           type: string
+ *           description: HTTP method of the request
+ *         path:
+ *           type: string
+ *           description: URL path of the request
+ *         timestamp:
+ *           type: string
+ *           format: date-time
+ *           description: When the error occurred
+ *   
+ *     ValidationError:
+ *       allOf:
+ *         - $ref: '#/components/schemas/ErrorResponse'
+ *         - type: object
+ *           properties:
+ *             name:
+ *               example: "InputValidationError"
+ *             errorType:
+ *               example: "validation"
+ *             fields:
+ *               type: object
+ *               additionalProperties:
+ *                 type: string
+ *               example:
+ *                 email: "Email format is invalid"
+ *                 password: "Password must be at least 6 characters"
+ *   
+ *     BusinessError:
+ *       allOf:
+ *         - $ref: '#/components/schemas/ErrorResponse'
+ *         - type: object
+ *           properties:
+ *             name:
+ *               example: "BusinessValidationError"
+ *             errorType:
+ *               example: "business"
+ *             context:
+ *               type: object
+ *               properties:
+ *                 domain:
+ *                   example: "auth"
+ *                 issue:
+ *                   example: "not_found"
+ *   
+ *     JwtError:
+ *       allOf:
+ *         - $ref: '#/components/schemas/ErrorResponse'
+ *         - type: object
+ *           properties:
+ *             name:
+ *               example: "JwtError"
+ *             errorType:
+ *               enum: [missing, expired, invalid]
+ *               example: "expired"
+ *             statusCode:
+ *               example: 401
+ *   
  *   securitySchemes:
  *     bearerAuth:
  *       type: http
@@ -18,7 +119,7 @@ import { BusinessValidationError } from '../services/error/classes/index.js';
  * /api/v1/auth/register:
  *   post:
  *     summary: Register a new user
- *     description: Creates a new user account with email, password, and optional role
+ *     description: Register a new user with an email, password, and an optional role
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -62,71 +163,71 @@ import { BusinessValidationError } from '../services/error/classes/index.js';
  *                       type: string
  *                     role:
  *                       type: string
+ *       400:
+ *         description: Invalid input or validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/ValidationError'
+ *                 - $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               validationError:
+ *                 value:
+ *                   statusCode: 400
+ *                   name: "InputValidationError"
+ *                   message: "Input validation failed."
+ *                   errorType: "validation"
+ *                   context:
+ *                     domain: "auth"
+ *                   fields:
+ *                     email: "Email format is invalid"
+ *                   summary:
+ *                     fields: ["email"]
+ *                     count: 1
+ *                   method: "POST"
+ *                   path: "/api/v1/auth/register"
+ *                   timestamp: "2023-05-01T12:34:56.789Z"
+ *               castError:
+ *                 value:
+ *                   statusCode: 400
+ *                   name: "CastError"
+ *                   message: "Hmm… this ID seems off. It doesn't match any records"
+ *                   errorType: "unknown"
+ *                   method: "POST"
+ *                   path: "/api/v1/auth/register"
+ *                   timestamp: "2023-05-01T12:34:56.789Z"
  *       409:
  *         description: Email already exists
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 statusCode:
- *                   type: integer
- *                   example: 409
- *                 name:
- *                   type: string
- *                   example: BusinessValidationError
- *                 message:
- *                   type: string
- *                   example: We've seen you before! Try logging in instead.
- *                 errorType:
- *                   type: string
- *                   example: business
- *                 context:
- *                   type: object
- *                   properties:
- *                     domain:
- *                       type: string
- *                       example: auth
- *                     issue:
- *                       type: string
- *                       example: conflict
- *                 method:
- *                   type: string
- *                   example: POST
- *                 path:
- *                   type: string
- *                   example: /api/v1/auth/register
- *                 timestamp:
- *                   type: string
- *                   format: date-time
+ *               $ref: '#/components/schemas/BusinessError'
+ *             example:
+ *               statusCode: 409
+ *               name: "BusinessValidationError"
+ *               message: "We've seen you before! Try logging in instead."
+ *               errorType: "business"
+ *               context:
+ *                 domain: "auth"
+ *                 issue: "conflict"
+ *               method: "POST"
+ *               path: "/api/v1/auth/register"
+ *               timestamp: "2023-05-01T12:34:56.789Z"
  *       500:
  *         description: Server error
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 statusCode:
- *                   type: integer
- *                   example: 500
- *                 name:
- *                   type: string
- *                   example: Error
- *                 message:
- *                   type: string
- *                   example: Bookkeeper's out! Please knock again later.
- *                 errorType:
- *                   type: string
- *                   example: unknown
- *                 method:
- *                   type: string
- *                   example: POST
- *                 path:
- *                   type: string
- *                   example: /api/v1/auth/register
- *                 timestamp:
- *                   type: string
- *                   format: date-time
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               statusCode: 500
+ *               name: "Error"
+ *               message: "Bookkeeper's out! Please knock again later."
+ *               errorType: "unknown"
+ *               method: "POST"
+ *               path: "/api/v1/auth/register"
+ *               timestamp: "2023-05-01T12:34:56.789Z"
  */
 
 const register = async (request, response, next) => {
@@ -165,7 +266,7 @@ const register = async (request, response, next) => {
  * /api/v1/auth/login:
  *   post:
  *     summary: Login a user
- *     description: Authenticates a user with email and password and returns a JWT token
+ *     description: Authenticate a user with their email and password, then issue a JWT token
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -205,90 +306,73 @@ const register = async (request, response, next) => {
  *                     role:
  *                       type: string
  *                       description: User's role in the system
- *       401:
- *         description: Invalid credentials
+ *       400:
+ *         description: Invalid input
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 statusCode:
- *                   type: integer
- *                   example: 401
- *                 name:
- *                   type: string
- *                   example: ApiError
- *                 message:
- *                   type: string
- *                   example: Something's off with that email or password. Give it another go!
- *                 errorType:
- *                   type: string
- *                   example: unknown
- *                 method:
- *                   type: string
- *                   example: POST
- *                 path:
- *                   type: string
- *                   example: /api/v1/auth/login
- *                 timestamp:
- *                   type: string
- *                   format: date-time
+ *               $ref: '#/components/schemas/ValidationError'
+ *       401:
+ *         description: Authentication failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/BusinessError'
+ *                 - $ref: '#/components/schemas/JwtError'
+ *             examples:
+ *               invalidCredentials:
+ *                 value:
+ *                   statusCode: 401
+ *                   name: "BusinessValidationError"
+ *                   message: "Something's off with that email or password. Give it another go!"
+ *                   errorType: "business"
+ *                   context:
+ *                     domain: "auth"
+ *                     issue: "authentication"
+ *                   method: "POST"
+ *                   path: "/api/v1/auth/login"
+ *                   timestamp: "2023-05-01T12:34:56.789Z"
+ *               expiredToken:
+ *                 value:
+ *                   statusCode: 401
+ *                   name: "JwtError"
+ *                   message: "Token's expired. Time for a fresh one!"
+ *                   errorType: "expired"
+ *                   method: "POST"
+ *                   path: "/api/v1/auth/login"
+ *                   timestamp: "2023-05-01T12:34:56.789Z"
  *       404:
  *         description: User not found
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 statusCode:
- *                   type: integer
- *                   example: 404
- *                 name:
- *                   type: string
- *                   example: ApiError
- *                 message:
- *                   type: string
- *                   example: No luck! That username's off the grid. Try registering instead.
- *                 errorType:
- *                   type: string
- *                   example: unknown
- *                 method:
- *                   type: string
- *                   example: POST
- *                 path:
- *                   type: string
- *                   example: /api/v1/auth/login
- *                 timestamp:
- *                   type: string
- *                   format: date-time
+ *               $ref: '#/components/schemas/BusinessError'
+ *             example:
+ *               statusCode: 404
+ *               name: "BusinessValidationError"
+ *               message: "No luck! That username's off the grid. Try registering instead."
+ *               errorType: "business"
+ *               context:
+ *                 domain: "auth"
+ *                 issue: "not_found"
+ *               method: "POST"
+ *               path: "/api/v1/auth/login"
+ *               timestamp: "2023-05-01T12:34:56.789Z"
  *       500:
  *         description: Server error
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 statusCode:
- *                   type: integer
- *                   example: 500
- *                 name:
- *                   type: string
- *                   example: Error
- *                 message:
- *                   type: string
- *                   example: Bookkeeper's out! Please knock again later.
- *                 errorType:
- *                   type: string
- *                   example: unknown
- *                 method:
- *                   type: string
- *                   example: POST
- *                 path:
- *                   type: string
- *                   example: /api/v1/auth/login
- *                 timestamp:
- *                   type: string
- *                   format: date-time
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               statusCode: 500
+ *               name: "Error"
+ *               message: "Bookkeeper's out! Please knock again later."
+ *               errorType: "unknown"
+ *               method: "POST"
+ *               path: "/api/v1/auth/login"
+ *               timestamp: "2023-05-01T12:34:56.789Z"
  */
 const login = async (request, response, next) => {
     const { email, password } = request.body;
