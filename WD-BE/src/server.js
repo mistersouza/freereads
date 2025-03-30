@@ -25,8 +25,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // Enable request logging
 app.use(log.httpRequest());
-// Enable Swagger docs
-swaggerDocs(app);
 // Boot up app
 const services = await bootstrapServices();
 // Expose services to routes
@@ -43,6 +41,8 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/books', bookRouter);
 app.use('/api/v1/hubs', hubRouter);
 app.use('/api/v1/users', userRouter);
+
+swaggerDocs(app);
 
 app.listen(ENV.PORT, () => {
   log.info(`🔓 Doors to the freereads are open on port ${ENV.PORT}`);

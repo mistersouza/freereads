@@ -19,6 +19,8 @@ export const ENV = {
     NODE_ENV: process.env.NODE_ENV || 'development',
     // Server
     PORT: process.env.PORT || 5500,
+    // Live site
+    LIVE_SITE: process.env.LIVE_SITE || 'https://freereads-reverse-proxy.onrender.com',
     // MongoDB
     MONGODB_URI: process.env.MONGODB_URI,
     // Google Cloud

@@ -12,10 +12,10 @@ const options = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production' 
-          ? 'https://freereads-lof1.onrender.com' 
-          : process.env.PORT || 'http://localhost:5500',
-        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
+        url: ENV.NODE_ENV === 'production'
+          ? ENV.LIVE_SITE
+          : `http://localhost:${ENV.PORT || 5500}`,
+        description: ENV.NODE_ENV === 'production' ? 'Production server' : 'Development server'
       }
     ],
     externalDocs: {
