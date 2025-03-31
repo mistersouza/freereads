@@ -47,7 +47,8 @@ const HUB_ERROR_MESSAGES = {
 const JWT_ERROR_MESSAGES = {
   'missing': 'Token\'s ghosted. Time for a new one!',
   'expired': 'Token\'s expired. Time for a fresh one!',
-  'invalid': 'Token trouble! It\'s off.'
+  'invalid': 'Token trouble! It\'s off.',
+  'blacklisted': 'You\'ve been logged out :/ Please log in again.',
 };
 
 /**

@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import { redisClient } from '../../infrastructure/redis/index.js';
 import { log } from '../../services/error/index.js';
 import { ENV } from '../../config/env.js';
@@ -8,7 +9,7 @@ import { ENV } from '../../config/env.js';
  * @param {string} ip - IP address to check
  * @returns {Promise<{isBlacklisted: boolean, remainingTime: number}>}
  */
-const isBlacklisted = async (ip) => {
+const isIPBlacklisted = async (ip) => {
   if (!redisClient.isReady) return { isBlacklisted: false };
   
   try {
@@ -44,6 +45,69 @@ const blacklistIP = async (ip, reason) => {
     await redisClient.expire(key, ENV.BLACKLIST_DURATION);
     
     log.warn(`IP blacklisted: ${ip}`, { reason });
+    return true;
+  } catch (error) {
+    log.error(error);
+    return false;
+  }
+};
+
+/**
+ * Revoke a user's access token
+ * 
+ * @param {string} token - The original authentication token
+ * @param {Object} payload - The decoded JWT payload
+ * @param {string} payload.id - User identifier
+ * @param {number} payload.exp - Token expiration timestamp
+ * @param {number} payload.iat - Token issued at timestamp
+ * @returns {Promise<boolean>} - Indicates whether the token was successfully blacklisted
+ */
+const blacklistToken = async (token, payload) => {
+  if (!redisClient.isReady) return false;
+
+  try {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const key = `${ENV.BLACKLIST_PREFIX}:${hashedToken}`;
+
+    await redisClient.set(key, payload.id);
+    await redisClient.expire(key, payload.exp - payload.iat);
+
+    log.info(`User ${payload.id}'s token blacklisted`);
+    return true;
+  } catch (error) {
+    log.error(error);
+    return false;
+  }
+};
+
+/**
+ * See if a token is blocked
+ * 
+ * @param {string} token - The authentication token to check
+ * @returns {Promise<boolean>} - Indicates whether the token is blacklisted
+ */
+const isTokenBlacklisted = async (token) => {
+  if (!redisClient.isReady) return false;
+
+  try {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const key = `${ENV.BLACKLIST_PREFIX}:${hashedToken}`;
+    return !!(await redisClient.get(key));
+  } catch (error) {
+    log.error(error);
+    return false;
+  }
+};
+
+const blacklistAllTokens = async (payload) => {
+  if (!redisClient.isReady) return false;
+
+  try {
+    const key = `${ENV.BLACKLIST_PREFIX}:user:${payload.id}:blacklisted`;
+    await redisClient.set(key, payload.id);
+    await redisClient.expire(key, ENV.BLACKLIST_DURATION || 86400);
+    
+    log.info(`User ${payload.id}'s tokens blacklisted`);
     return true;
   } catch (error) {
     log.error(error);
@@ -88,4 +152,11 @@ const _recordAttempt = async (ip, type, maxAttempts) => {
   }
 };
 
-export { isBlacklisted, blacklistIP, _recordAttempt };
+export {
+  isIPBlacklisted,
+  blacklistIP,
+  blacklistToken,
+  isTokenBlacklisted,
+  blacklistAllTokens,
+  _recordAttempt,
+};

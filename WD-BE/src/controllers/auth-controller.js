@@ -230,6 +230,15 @@ import { BusinessValidationError } from '../services/error/classes/index.js';
  *               timestamp: "2023-05-01T12:34:56.789Z"
  */
 
+/**
+ * Sign up a new user with email, password, and role.
+ * 
+ * @param {Object} request - Express request object containing user registration details
+ * @param {Object} response - Express response object for sending registration result
+ * @param {Function} next - Express next middleware function for error handling
+ * @throws {BusinessValidationError} Throws an error if the email already exists
+ * @returns {Object} User registration response with JWT token and user details
+ */
 const register = async (request, response, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -374,6 +383,14 @@ const register = async (request, response, next) => {
  *               path: "/api/v1/auth/login"
  *               timestamp: "2023-05-01T12:34:56.789Z"
  */
+/**
+ * Log in a user with their email and password.
+ * 
+ * @param {Object} request - Express request object containing user credentials
+ * @param {Object} response - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object|void} JSON response with user token and details or passes error to next middleware
+ */
 const login = async (request, response, next) => {
     const { email, password } = request.body;
 
@@ -397,4 +414,75 @@ const login = async (request, response, next) => {
     }
 };
 
-export { register, login };
+/**
+ * @swagger
+ * /api/v1/auth/logout:
+ *   post:
+ *     summary: Logout a user
+ *     description: Invalidates the user's JWT token, effectively logging them out
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Successfully logged out"
+ *       401:
+ *         description: Unauthorized, missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/JwtError'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+/*
+ * Log out user by blacklisting the JWT token
+ * 
+ * @param {Object} request - Express request object
+ * @param {Object} response - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Object|void} JSON response or passes control to next middleware
+ */
+const logout = async (request, response, next) => {
+    try {
+        const token = request.app.locals.services.jwt
+            .extractToken(request.headers.authorization);
+        
+        if (!token) {
+            return response.status(200).json({
+                message: 'Sign in when you’re ready.'
+            });
+        }; 
+
+        try {
+            const payload = request.app.locals.services.jwt
+                .verifyToken(token);
+            await request.app.locals.services.blacklist
+                .blacklistToken(token, payload);
+
+            return response.status(200).json({
+                message: 'You’re out! See you again soon.'
+            });
+        } catch (jwtError) {
+            return response.status(200).json({
+                message: 'Session over. Please log back in.'
+            });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+export { register, login, logout };

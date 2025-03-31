@@ -5,7 +5,7 @@ import { JwtError } from '../services/error/classes/index.js';
  * 
  * @param {boolean} authenticate - Whether authentication is required
  */
-const authenticateUser = (authenticate) => (request, response, next) => {
+const authenticateUser = (authenticate) => async (request, response, next) => {
     const token = request.app.locals.services.jwt
         .extractToken(request.headers.authorization);
 
@@ -13,6 +13,14 @@ const authenticateUser = (authenticate) => (request, response, next) => {
         return authenticate 
             ? next(JwtError.missing()) 
             : next();
+    }
+
+    
+    const isTokenBlacklisted = await request.app.locals.services.blacklist
+        .isTokenBlacklisted(token);
+    
+    if (isTokenBlacklisted) {
+        return next(JwtError.blacklisted());
     }
 
     try {

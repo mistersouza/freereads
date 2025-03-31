@@ -12,7 +12,7 @@ const throttleBlacklist = async (request, response, next) => {
         const { 
             isBlacklisted, 
             remainingTime,
-        } = await request.app.locals.services.blacklist.isBlacklisted(request.ip);
+        } = await request.app.locals.services.blacklist.isIPBlacklisted(request.ip);
         
         if (isBlacklisted) {
             log.warn(`${request.ip} is on the blacklist.`);

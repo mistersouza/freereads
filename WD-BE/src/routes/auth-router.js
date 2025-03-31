@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login } from '../controllers/auth-controller.js';
+import { register, login, logout } from '../controllers/auth-controller.js';
 import { AUTH_ERROR_MESSAGES } from '../services/error/constants.js';
 import { validateMember } from '../middlewares/validate-middleware.js';
 import { handleError } from '../services/error/handler.js';
@@ -16,7 +16,6 @@ router.use(validateMember);
 
 router.post('/register', register);
 router.post('/login', login);
-
-router.use(handleError(AUTH_ERROR_MESSAGES));
+router.post('/logout', logout);
 
 export default router;

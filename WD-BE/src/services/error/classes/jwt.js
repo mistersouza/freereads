@@ -19,7 +19,7 @@ class JwtError extends ApiError {
     }
     
     /**
-     * Creates an error for missing JWT token scenarios.
+     * Kicks off an error if the JWT token is MIA
      * @returns {JwtError} Error with 'missing' type
      */
     static missing() {
@@ -27,7 +27,7 @@ class JwtError extends ApiError {
     }
     
     /**
-     * Creates an error for expired JWT token scenarios.
+     * Rings the alarm for expired JWT tokens
      * @returns {JwtError} Error with 'expired' type
      */
     static expired() {
@@ -35,11 +35,18 @@ class JwtError extends ApiError {
     }
     
     /**
-     * Creates an error for invalid JWT token scenarios (malformed or tampered).
+     * Hits the brakes on invalid JWT tokens—whether tampered or broken
      * @returns {JwtError} Error with 'invalid' type
      */
     static invalid() {
         return new JwtError('invalid');
+    }
+    /**
+     * Throws a fireball when a blacklisted JWT token is detected
+     * @returns {JwtError} Error with 'blacklisted' type
+     */
+    static blacklisted() {
+        return new JwtError('blacklisted');
     }
 }
 
