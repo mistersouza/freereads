@@ -4,10 +4,10 @@ import {
     InputValidationError, 
     JwtError 
 } from './classes/index.js';
-import { DEFAULT_ERROR_MESSAGES } from './constants.js';
 import { log } from './logger.js';
 import { handleError } from './handler.js';
 import { getResourceName, getInputErrors } from './utils.js';
+import { DOMAIN_ERROR_MESSAGES, DEFAULT_ERROR_MESSAGES } from './constants.js';
 
 export {
     // Error classes
@@ -24,5 +24,9 @@ export {
     getInputErrors,
     
     // Logger
-    log
+    log,
+
+    // Constants
+    DOMAIN_ERROR_MESSAGES,
+    DEFAULT_ERROR_MESSAGES,
 };

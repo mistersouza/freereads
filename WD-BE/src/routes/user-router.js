@@ -1,7 +1,5 @@
 import express from 'express';
 import { authorizeAccess } from '../middlewares/auth-middleware.js';
-import { USER_ERROR_MESSAGES } from '../services/error/constants.js';
-import { handleError } from '../services/error/handler.js';
 import { 
     getUsers, 
     getUser,
@@ -29,7 +27,5 @@ router.route('/:id')
     .get(getUser)
     .put(updateUser)
     .delete(deleteUser);
-
-router.use(handleError(USER_ERROR_MESSAGES));
 
 export default router;

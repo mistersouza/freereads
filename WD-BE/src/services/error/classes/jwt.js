@@ -14,7 +14,7 @@ class JwtError extends ApiError {
         super(401, 'token');
         this.errorType = errorType;
         this.name = 'JwtError';
-        this.jwtError = true;
+        this.resource = 'jwt';
         Error.captureStackTrace(this, this.constructor);
     }
     

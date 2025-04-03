@@ -1,8 +1,6 @@
 import { Router } from 'express';
 import { register, login, logout } from '../controllers/auth-controller.js';
-import { AUTH_ERROR_MESSAGES } from '../services/error/constants.js';
 import { validateMember } from '../middlewares/validate-middleware.js';
-import { handleError } from '../services/error/handler.js';
 
 /**
  * @swagger

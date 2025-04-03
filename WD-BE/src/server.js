@@ -5,7 +5,9 @@ import { corsOptions } from './config/cors.js';
 import { swaggerDocs } from './config/swagger.js';
 import { ENV } from './config/env.js';
 
-import { log } from './services/error/index.js';
+import { log, handleError } from './services/error/index.js';
+import { DOMAIN_ERROR_MESSAGES } from './services/error/index.js';
+
 import { bootstrapServices } from './init/index.js';
 
 import scanBookRouter from './routes/scan-router.js';
@@ -41,6 +43,8 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/books', bookRouter);
 app.use('/api/v1/hubs', hubRouter);
 app.use('/api/v1/users', userRouter);
+
+app.use(handleError(DOMAIN_ERROR_MESSAGES));
 
 swaggerDocs(app);
 

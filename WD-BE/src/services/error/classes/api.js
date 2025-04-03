@@ -24,7 +24,7 @@ class ApiError extends Error {
          * Resource name associated with the error
          * @type {string}
          */
-        this.resourceName = resourceName;
+        this.resource = resourceName;
         
         /**
          * Error status - 'fail' for client errors (4xx), 'error' for server errors (5xx)
