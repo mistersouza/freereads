@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import { redisClient } from '../../infrastructure/redis/index.js';
 import { log } from '../../services/error/index.js';
 import { ENV } from '../../config/env.js';
+import User from '../../models/user-model.js';
 
 /**
  * Scan for blacklist status
@@ -16,16 +17,16 @@ const isIPBlacklisted = async (ip) => {
     const key = `${ENV.BLACKLIST_PREFIX}:${ip}`;
     const value = await redisClient.get(key);
     
-    if (!value) return { isBlacklisted: false };
+    if (!value) return { isIPBlacklisted: false };
     
     const ttl = await redisClient.ttl(key);
     return { 
-      isBlacklisted: true, 
+      isIPBlacklisted: true, 
       remainingTime: ttl 
     };
   } catch (error) {
     log.error(error);
-    return { isBlacklisted: false };
+    return { isIPBlacklisted: false };
   }
 };
 
@@ -62,21 +63,30 @@ const blacklistIP = async (ip, reason) => {
  * @param {number} payload.iat - Token issued at timestamp
  * @returns {Promise<boolean>} - Indicates whether the token was successfully blacklisted
  */
-const blacklistToken = async (token, payload) => {
-  if (!redisClient.isReady) return false;
+const blacklistToken = async (payload, reason = 'Refresh rotation') => {
+  if (!redisClient.isReady) {
+    return {
+      status: 'failed',
+      message: 'Oops! Redis is on a break.' 
+    };
+  }
 
   try {
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-    const key = `${ENV.BLACKLIST_PREFIX}:${hashedToken}`;
+    const ttl = payload.exp - Math.floor(Date.now() / 1000);
+    
+    await redisClient.set(
+      `${ENV.BLACKLIST_PREFIX}:${payload.jti}`,
+      reason,
+      { EX: ttl }
+    );
 
-    await redisClient.set(key, payload.id);
-    await redisClient.expire(key, payload.exp - payload.iat);
-
-    log.info(`User ${payload.id}'s token blacklisted`);
-    return true;
+    return { status: 'done' };
   } catch (error) {
     log.error(error);
-    return false;
+    return { 
+      status: 'failed', 
+      message: 'Blacklisting the token failed.' 
+    };
   }
 };
 
@@ -86,13 +96,11 @@ const blacklistToken = async (token, payload) => {
  * @param {string} token - The authentication token to check
  * @returns {Promise<boolean>} - Indicates whether the token is blacklisted
  */
-const isTokenBlacklisted = async (token) => {
+const isTokenBlacklisted = async (payload) => {
   if (!redisClient.isReady) return false;
 
   try {
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-    const key = `${ENV.BLACKLIST_PREFIX}:${hashedToken}`;
-    return !!(await redisClient.get(key));
+    return !!(await redisClient.get(`${ENV.BLACKLIST_PREFIX}:${payload.jti}`));
   } catch (error) {
     log.error(error);
     return false;
@@ -100,14 +108,14 @@ const isTokenBlacklisted = async (token) => {
 };
 
 const blacklistAllTokens = async (payload) => {
-  if (!redisClient.isReady) return false;
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
-    const key = `${ENV.BLACKLIST_PREFIX}:user:${payload.id}:blacklisted`;
-    await redisClient.set(key, payload.id);
-    await redisClient.expire(key, ENV.BLACKLIST_DURATION || 86400);
-    
-    log.info(`User ${payload.id}'s tokens blacklisted`);
+    await Jwt.deleteMany({ user: payload.id }, { session });
+    await session.commitTransaction();
+    session.endSession();
+
     return true;
   } catch (error) {
     log.error(error);
@@ -151,6 +159,7 @@ const _recordAttempt = async (ip, type, maxAttempts) => {
     return { blacklisted: false };
   }
 };
+
 
 export {
   isIPBlacklisted,

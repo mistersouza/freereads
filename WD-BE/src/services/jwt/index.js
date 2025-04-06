@@ -1,4 +1,4 @@
-import { issueToken, verifyToken, extractToken } from "./utils.js";
+import { issueTokenPair, verifyToken, extractToken, refreshAccessToken } from "./utils.js";
 
 /**
  * Boot up JWT service
@@ -6,9 +6,10 @@ import { issueToken, verifyToken, extractToken } from "./utils.js";
  * @returns {Object} - JWT service functions
  */
 const initializeJwtService = () => ({
-    issueToken,
+    issueTokenPair,
     verifyToken,
     extractToken,
+    refreshAccessToken,
 });
 
 export { initializeJwtService };
