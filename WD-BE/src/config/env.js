@@ -28,8 +28,10 @@ export const ENV = {
     // CORS
     CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
     // Authentication
-    JWT_SECRET: process.env.JWT_SECRET,
-    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
+    JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+    JWT_ACCESS_EXPIRES_IN: parseInt(process.env.JWT_ACCESS_EXPIRES_IN) || 15 * 60,
+    JWT_REFRESH_EXPIRES_IN: parseInt(process.env.JWT_REFRESH_EXPIRES_IN) ||  7 * 24 * 60 * 60,
     // Rate limiting
     TRUSTED_IPS: process.env.TRUSTED_IPS || '::1,127.0.0.1',
     RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
@@ -57,7 +59,9 @@ export const ENV = {
 const requiredEnvVariables = [
     'MONGODB_URI',
     'GOOGLE_CREDENTIALS',
-    'JWT_SECRET',
+    'JWT_ACCESS_SECRET',
+    'JWT_REFRESH_SECRET',
+    'REDIS_URL',
 ];
 
 for (const envVariable of requiredEnvVariables) {

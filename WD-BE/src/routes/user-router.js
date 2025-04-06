@@ -1,4 +1,5 @@
 import express from 'express';
+import User from '../models/user-model.js';
 import { authorizeAccess } from '../middlewares/auth-middleware.js';
 import { 
     getUsers, 
@@ -17,15 +18,13 @@ import {
 
 const router = express.Router();
 
-router.use(authorizeAccess());
-
 router.route('/')
-    .get(getUsers)
-    .post(createUser);
+    .get(authorizeAccess(), getUsers)
+    .post(authorizeAccess(), createUser);
 
 router.route('/:id')
-    .get(getUser)
-    .put(updateUser)
-    .delete(deleteUser);
+    .get(authorizeAccess({ model: User }), getUser)
+    .put(authorizeAccess({ model: User }), updateUser)
+    .delete(authorizeAccess({ model: User }), deleteUser);
 
 export default router;

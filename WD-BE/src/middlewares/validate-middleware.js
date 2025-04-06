@@ -6,7 +6,8 @@ import {
   bookRules,
   hubRules,
   scanRules,
-  userRules
+  userRules,
+  tokenRules
 } from '../validations/index.js';
 
 /**
@@ -57,6 +58,11 @@ const validate = (rules) => async (request, response, next) => {
 const validateMember = validate([userRules.email, userRules.password]);
 
 /**
+ * Validate refresh token request.
+ */
+const validateToken = validate([tokenRules.refresh]);
+
+/**
  * Validate book scanning image URL or ISBN inputs, or both, with accuracy.
  */
 const validateScan = validate([scanRules.imageUrl, scanRules.isbn, scanRules.check]);
@@ -66,4 +72,4 @@ const validateScan = validate([scanRules.imageUrl, scanRules.isbn, scanRules.che
  */
 const validateBook = validate([bookRules.title, bookRules.author, bookRules.hubs]);
 
-export { validateMember, validateScan, validateBook };
+export { validateMember, validateScan, validateBook, validateToken };

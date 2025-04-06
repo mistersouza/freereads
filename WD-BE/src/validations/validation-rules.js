@@ -108,4 +108,13 @@ const scanRules = {
   })
 };
 
-export { bookRules, hubRules, scanRules, userRules };
+const tokenRules = {
+  refresh: body('refreshToken')
+    .exists().withMessage('Missing refresh token.')
+    .bail()
+    .isString().withMessage('Token gotta be a string.')
+    .bail()
+    .isLength({ min: 1 }).withMessage('Token cannot be empty.')
+};
+
+export { bookRules, hubRules, scanRules, userRules, tokenRules };

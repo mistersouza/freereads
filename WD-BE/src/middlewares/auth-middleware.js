@@ -1,9 +1,9 @@
-import { ApiError } from '../services/error/classes/index.js';
+import { BusinessValidationError } from '../services/error/classes/index.js';
 import { getResourceName } from '../services/error/index.js';
 import { loadAuthenticatedUser } from './authenticate-user.js';
 
 /**
- * Generates middleware to control access based on roles or ownership
+ * Grant access based on roles or ownership
  * 
  * @param {Object} [options={}] - Configuration options for access authorization
  * @param {Array<string>} [options.roles=['boss', 'overlord']] - Allowed user roles
@@ -15,23 +15,32 @@ const authorizeAccess = ({ roles = ['boss', 'overlord'], model = null } = {}) =>
     loadAuthenticatedUser,
     async (request, response, next) => {
         const { user } = request;
-        if (roles.includes(user.role)) return next();
-
+        if (roles.includes(user.role)) {
+            return next();
+        }
+        
         const { id } = request.params;
         if (!id || !model) {
-            return next(new ApiError(403, getResourceName(request)));
+            return next(
+                BusinessValidationError.forbidden('auth')
+            );
         }
-
+        
         try {
             const resource = await model.findById(id);
             if (!resource) {
-                return next(new ApiError(404, getResourceName(request)));
+                return next(
+                    BusinessValidationError.notFound(getResourceName(request))
+                );
             }
 
-            const isOwner = user.id === resource.userId.toString();
-            const isSelf = user.id === id;
-            if (!isOwner && !isSelf) {
-                return next(new ApiError(403, getResourceName(request)));
+            const userId = resource.userId || resource._id;
+            const isOwner = user.id === userId?.toString();
+
+            if (!isOwner) {
+                return next(
+                    BusinessValidationError.forbidden('auth')
+                );
             }
 
             next();

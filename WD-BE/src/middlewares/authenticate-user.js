@@ -15,7 +15,6 @@ const authenticateUser = (authenticate) => async (request, response, next) => {
             : next();
     }
 
-    
     const isTokenBlacklisted = await request.app.locals.services.blacklist
         .isTokenBlacklisted(token);
     
@@ -24,11 +23,13 @@ const authenticateUser = (authenticate) => async (request, response, next) => {
     }
 
     try {
-        request.user = request.app.locals.services.jwt.verifyToken(token);
+        request.user = request.app.locals.services.jwt
+            .verifyToken(token, 'access');
+            
         next();
     } catch (error) {
         return authenticate 
-            ? next(error.expireAt ? JwtError.expired() : JwtError.invalid())
+            ? next(error.expiredAt ? JwtError.expired() : JwtError.invalid())
             : next();
     }
 };

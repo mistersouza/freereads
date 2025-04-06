@@ -2,12 +2,14 @@ import {
   bookRules,
   hubRules,
   scanRules,
-  userRules
+  tokenRules,
+  userRules,
 } from './validation-rules.js';
 
 export {
   bookRules,
   hubRules,
+  tokenRules,
   scanRules,
-  userRules
+  userRules,
 };
