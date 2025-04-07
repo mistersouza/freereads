@@ -1,322 +1,265 @@
-# CI/CD Setup for FreeReads
+# FreeReads Berlin
 
-This document outlines the complete CI/CD pipeline setup for the FreeReads project.
+![FreeReads Berlin](https://res.cloudinary.com/dhlhrakma/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1744046629/freereads/readme/freereads_logo_x0zhif.png)
 
-## Table of Contents
+## 📚 Project Overview
 
-- [Prerequisites](#prerequisites)
-- [MongoDB Atlas Setup](#mongodb-atlas-setup)
-- [Render Deployment Setup](#render-deployment-setup)
-- [Environment Configuration](#environment-configuration)
-- [GitHub Actions CI/CD Pipeline](#github-actions-cicd-pipeline)
-- [Redis Configuration](#redis-configuration)
-- [Security Best Practices](#security-best-practices)
+FreeReads enables Berlin residents to:
 
-## Prerequisites
+- **📍 Locate nearby book hubs** across the city
+- **📚 Browse available books**, both citywide and in their vicinity
+- **🧰 Manage donated books** for better tracking and accessibility
+- **🤝 Contribute to a community library** that everyone can enjoy
 
-- Node.js and npm installed
-- Git installed
-- GitHub account
-- MongoDB Atlas account
-- Render account
-- Upstash account (for Redis)
+Our mission is to create a seamless platform where anyone in Berlin can discover and access quality reading material—completely free of charge.
 
-## MongoDB Atlas Setup
+## 🏗 Architecture
 
-1. **Create a MongoDB Atlas Cluster**:
-   - Sign up or log in to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-   - Create a new project
-   - Build a new cluster (the free tier works for development)
-   - Choose your preferred cloud provider and region
+![FreeReads Architecture](https://res.cloudinary.com/dhlhrakma/image/upload/v1744051339/freereads/readme/freereads_architecture-diagram_pytuhq.png)
 
-2. **Configure Database Access**:
-   - In the Security tab, create a new database user with read/write permissions
-   - Set a secure password and save it for later use
+FreeReads follows a modern, containerized microservices architecture optimized for scalability and performance:
 
-3. **Configure Network Access**:
-   - Add your current IP address to the IP access list
-   - For deployment, add `0.0.0.0/0` to allow all IPs (or use Render's IP addresses)
+- **NGINX Layer**: Reverse proxy handling SSL, load balancing, and security headers
+- **Node.js/Express Layer**: RESTful API with business logic and authentication
+- **Redis Layer**: High-performance caching, token blacklisting, and rate limiting
+- **MongoDB Layer**: Document database with geospatial capabilities for hub location
 
-4. **Get Your Connection String**:
-   - Click "Connect" on your cluster
-   - Choose "Connect your application"
-   - Copy the connection string, which looks like:
-     ```
-     mongodb+srv://<username>:<password>@<cluster-name>.<id>.mongodb.net/<database-name>?retryWrites=true&w=majority
-     ```
-   - Replace `<username>` and `<password>` with your actual credentials
-   - Add a database name after the hostname (e.g., `freereads`)
+## 🛠️ Tech Stack
 
-5. **Create a Test Database**:
-   - Use the same connection string but change the database name:
-     ```
-     mongodb+srv://<username>:<password>@<cluster-name>.<id>.mongodb.net/freereads-test?retryWrites=true&w=majority
-     ```
+- **Backend**: Node.js/Express RESTful API
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT-based auth with separate access/refresh tokens and blacklisting
+- **Documentation**: OpenAPI/Swagger for interactive API documentation
+- **Validation**: Input validation and error handling middleware
+- **Caching**: Redis for performance optimization and token blacklisting
+- **Cloud Services**: Google Cloud for book scanning and ISBN detection
+- **Infrastructure**: Docker, NGINX for production deployment
+- **CI/CD**: GitHub Actions pipeline with automated testing and deployment
+- **Hosting**: Render Cloud Platform
 
-## Render Deployment Setup
+## 🌟 Key Features
 
-1. **Create a New Web Service**:
-   - Log in to [Render](https://render.com/)
-   - Click "New" and select "Web Service"
-   - Connect your GitHub repository
-   - Configure your service:
-     - Name: `freereads`
-     - Environment: `Node`
-     - Build Command: `npm install`
-     - Start Command: `npm start`
+- **Geospatial Book Hub Locator**: Find the nearest places to pick up or drop off books
+- **Book Scanning API**: Easily add books to the system by scanning barcodes or ISBN using Google Cloud Vision
+- **User Authentication**: Secure login, registration, and token refresh system with JWT
+- **Role-Based Access Control**: Different permission levels (member, boss, overlord)
+- **Real-time Availability**: Up-to-date information on book availability
+- **Comprehensive API Documentation**: Fully documented with interactive Swagger/OpenAPI interface
 
-2. **Add Environment Variables**:
-   - In your service's "Environment" tab, add all required environment variables:
-     - `NODE_ENV=production`
-     - `PORT=10000`
-     - `MONGODB_URI=mongodb+srv://...` (your production connection string)
-     - `JWT_SECRET=your-jwt-secret`
-     - `GOOGLE_CREDENTIALS_BASE64=...` (your base64-encoded credentials)
-     - `CORS_ORIGIN=https://your-frontend-domain.com`
-     - All other required variables from your .env file
+## 🤖 AI & Computer Vision
 
-3. **Create render.yaml**:
-   - Create a `render.yaml` file in your repository root:
+FreeReads leverages artificial intelligence to enhance the book-sharing experience:
 
-```yaml
-services:
-  - type: web
-    name: freereads
-    env: node
-    buildCommand: npm install
-    startCommand: npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 10000
-      - key: MONGODB_URI
-        sync: false
-      - key: CORS_ORIGIN
-        value: https://your-frontend-domain.com
-      - key: JWT_SECRET
-        sync: false
-      - key: GOOGLE_CREDENTIALS_BASE64
-        sync: false
-      - key: REDIS_URL
-        sync: false
-      - key: REDIS_ENABLED
-        value: true
-      # Add all other environment variables here
+### Current Implementation
+
+- **Google Cloud Vision Integration**
+  - Automatic ISBN detection from book cover images
+  - Text recognition technology to extract book identifiers
+  - Seamless integration with Google Books API for metadata
+  - User-friendly scanning experience with minimal input required
+
+### Future AI Enhancements
+
+As part of my ongoing deep learning studies at TechLabs, I plan to develop:
+
+- **Custom Computer Vision Models** tailored specifically for book recognition
+- **Natural Language Processing** for book categorization and recommendation
+- **Personalized Recommendation Engine** based on borrowing patterns
+- **Book Condition Assessment** using image analysis
+
+This AI integration demonstrates practical machine learning implementation skills while laying the groundwork for more advanced custom solutions that will make FreeReads an increasingly intelligent platform.
+
+## 🚀 Project Roadmap
+
+FreeReads is an evolving platform with ambitious plans for growth and innovation:
+
+### Immediate Development Plans
+
+- **React Frontend Implementation** (In Progress)
+  - Modern, responsive UI built with React
+  - Material UI component library for consistent design
+  - State management with Redux or Context API
+  - Progressive Web App (PWA) capabilities for offline access
+  - Geospatial visualization of book hubs on interactive maps
+
+### Deep Learning Integration (Q3-Q4 2025)
+
+As part of my upcoming TechLabs Deep Learning track studies, I plan to integrate advanced AI capabilities:
+
+- **Book Recommendation Engine**
+  - Collaborative filtering based on user borrowing patterns
+  - Content-based recommendations using book metadata
+  - Hybrid recommendation approach for cold-start problems
+  - Personalized reading suggestions based on past activity
+
+- **Natural Language Processing**
+  - Book description analysis for improved categorization
+  - Sentiment analysis of book reviews
+  - Automated genre classification from book content
+  - Text summarization for book descriptions
+
+### AI Enhancements (Q1-Q2 2026)
+
+Following the deep learning track, I'll be applying specialized AI knowledge to:
+
+- **Computer Vision Improvements**
+  - Book cover recognition without ISBN
+  - Condition assessment from book images
+  - Automated categorization based on visual elements
+  - Multi-book detection in a single image
+
+- **Predictive Analytics**
+  - Book availability forecasting
+  - Hub usage pattern analysis
+  - Seasonal trend identification
+  - Demand-based hub location suggestions
+
+### Mobile Application (Q3-Q4 2026)
+
+The ultimate goal is to transform FreeReads into a comprehensive mobile experience:
+
+- **Cross-Platform Mobile App**
+  - React Native implementation for iOS and Android
+  - Native device feature integration (camera, GPS, notifications)
+  - Offline-first architecture with synchronization
+  - Barcode/QR code scanning for quick book checkout
+
+## 🚀 Scalability Architecture
+
+FreeReads is built with horizontal scaling capabilities to handle growing demand:
+
+- **Stateless Application Design**
+  - Containerized services with Docker
+  - JWT authentication eliminating server-side sessions
+  - Independent application instances without shared local state
+  - NGINX load balancing across multiple containers
+
+- **Distributed Infrastructure**
+  - Redis for centralized token blacklisting and rate limiting
+  - MongoDB with sharding capabilities for database scaling
+  - Geospatial indexing optimized for location-based queries
+  - Connection pooling for efficient resource management
+
+- **Cloud-Native Deployment**
+  - Auto-scaling configuration on Render platform
+  - Zero-downtime deployment pipeline
+  - Environment-specific configuration
+  - Infrastructure as code for consistent environments
+
+This architecture allows FreeReads to scale horizontally by adding more application instances as user demand grows, rather than being limited to vertical scaling of individual servers.
+
+## 🔒 Security & Performance
+
+FreeReads implements industry best practices for:
+
+### Advanced Security Architecture
+
+- **Multi-Layered JWT Authentication**:
+  - Dual token system with short-lived access tokens (15 min) and longer refresh tokens (7 days)
+  - Token rotation on every refresh for enhanced security
+  - Redis-backed token blacklisting with TTL-based expiration
+  - Automatic invalidation on logout, refresh, and security events
+
+- **Comprehensive Abuse Prevention**:
+  - Tiered rate limiting based on authentication status
+  - Progressive request throttling with increasing delays
+  - IP blacklisting after excessive failed attempts
+  - Failed login tracking with temporary account lockouts
+
+- **Request Validation & Protection**:
+  - Thorough input validation for all endpoints
+  - Configurable CORS with strict origin policies
+  - Security headers (CSP, XSS Protection, Frame Options)
+  - Sanitized error responses to prevent information leakage
+
+### Performance Engineering
+
+- **Advanced Caching Architecture**
+  - Multi-tiered Redis implementation with atomic operations
+  - Intelligent reconnection strategy with exponential backoff
+  - Prefix-based namespace isolation and TTL-based expiration
+  - Graceful degradation with in-memory fallbacks
+
+- **Sophisticated Database Optimization**
+  - Geospatial indexing and queries for location-based features
+  - Strategic MongoDB indexing including compound and text indexes
+  - Query optimization with projection, lean queries, and pre-aggregation
+  - Efficient document structure with appropriate denormalization
+
+- **Request Processing Optimization**
+  - Intelligent middleware sequencing with early termination
+  - Dynamic rate limiting based on authentication status
+  - Parallel processing for external API calls
+  - Efficient error handling and resource management
+
+## 🧪 Code Quality & Testing
+
+FreeReads maintains high code quality standards through:
+
+- **Comprehensive Testing Suite**
+  - Unit tests with Jest (80%+ coverage)
+  - Integration tests for API endpoints
+  - End-to-end testing for critical user flows
+  - Automated testing in CI/CD pipeline
+
+- **Code Quality Tools**
+  - ESLint with Airbnb style guide
+  - Prettier for consistent formatting
+  - TypeScript for enhanced type safety (in progress)
+  - Pre-commit hooks for quality enforcement
+
+- **Development Practices**
+  - Structured code review process
+  - Pull request templates and guidelines
+  - Comprehensive JSDoc documentation
+  - Architecture decision records for key choices
+
+These practices ensure maintainable, reliable code that can evolve with changing requirements while maintaining high quality standards.
+
+## 📖 Documentation
+
+FreeReads provides comprehensive documentation to help developers understand and integrate with the platform:
+
+![FreeReads API Documentation](https://res.cloudinary.com/dhlhrakma/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1744055268/freereads/readme/freereads_swagger_sj7c74.png)
+
+- **Interactive API Explorer**: [Live Swagger Documentation](https://freereads-lof1.onrender.com/) - Test endpoints directly in your browser
+- **Backend Architecture**: [Backend Documentation](WD-BE/README.md) - Detailed guide to the API architecture and implementation
+- **Development Guide**: Instructions for local setup and contribution
+
+The Swagger documentation provides complete information about all available endpoints, request/response formats, authentication requirements, and error handling - making integration straightforward for frontend developers.
+
+## 🔧 Development
+
+### Prerequisites
+
+- Node.js (v14+)
+- MongoDB
+- Redis (optional for development, recommended for production)
+- Google Cloud account (for book scanning features)
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/mistersouza/freereads.git
+cd freereads
+
+# Install dependencies
+cd WD-BE
+npm install
+
+# Set up environment variables
+cp .env.example .env.development.local
+# Edit .env.development.local with your configuration
+
+# Start the development server
+npm run dev
 ```
 
-## Environment Configuration
+## 📄 License
 
-1. **Update env.js for Google Credentials**:
-   - Modify your `src/config/env.js` file to handle Google credentials:
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-```javascript
-import { config } from 'dotenv';
-import fs from 'fs';
+## 👥 About the Developer
 
-config({ path: `.env.${process.env.NODE_ENV || 'development'}.local` });
-
-// Handle Google credentials from base64 if provided
-if (process.env.GOOGLE_CREDENTIALS_BASE64) {
-  try {
-    const credentials = Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString('utf-8');
-    fs.writeFileSync('./src/config/google-credentials.json', credentials);
-    console.log('Google credentials file created from environment variable');
-    // Set the path to the credentials file
-    process.env.GOOGLE_CREDENTIALS = './src/config/google-credentials.json';
-  } catch (error) {
-    console.error('Failed to create Google credentials file:', error);
-  }
-}
-
-export const ENV = {
-    // Your environment variables...
-};
-```
-
-2. **Create .env.example**:
-   - Create a `.env.example` file in your repository:
-
-```
-# MongoDB
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-name>.<id>.mongodb.net/<database-name>?retryWrites=true&w=majority
-
-# Google
-GOOGLE_CREDENTIALS=./src/config/google-credentials.json
-GOOGLE_CREDENTIALS_BASE64=<base64-encoded-credentials>
-
-# CORS
-CORS_ORIGIN=https://your-frontend-domain.com
-
-# JWT
-JWT_SECRET=your-jwt-secret
-JWT_EXPIRES_IN=1d
-
-# Rate Limiting
-TRUSTED_IPS=::1,127.0.0.1
-RATE_LIMIT_WINDOW_MS=60000
-RATE_LIMIT_STRICT=3
-RATE_LIMIT_DEFAULT=5
-RATE_LIMIT_AUTHENTICATED=10
-
-# Slow Down
-SLOW_DOWN_WINDOW_MS=60000
-SLOW_DOWN_DELAY_AFTER=2
-SLOW_DOWN_DELAY_MS=500
-
-# Blacklist
-BLACKLIST_PREFIX=blacklist
-BLACKLIST_DURATION=86400
-MAX_LOGIN_ATTEMPTS=3
-MAX_API_ABUSE=10
-ATTEMPT_RESET_TIME=3600
-
-# Redis
-REDIS_URL=redis://default:password@hostname:port
-REDIS_ENABLED=true
-```
-
-## GitHub Actions CI/CD Pipeline
-
-1. **Create Workflow Directory**:
-   - Create a `.github/workflows` directory in your repository root:
-   ```bash
-   mkdir -p .github/workflows
-   ```
-
-2. **Create CI/CD Workflow**:
-   - Create a file named `ci-cd.yml` in the `.github/workflows` directory:
-
-```yaml
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-      working-directory: ./WD-BE
-    
-    - name: Create test env file
-      run: |
-        echo "MONGODB_URI=${{ secrets.MONGODB_URI_TEST }}" > .env.test.local
-        echo "GOOGLE_CREDENTIALS_BASE64=${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" >> .env.test.local
-        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.test.local
-        echo "NODE_ENV=test" >> .env.test.local
-        echo "REDIS_ENABLED=false" >> .env.test.local
-      working-directory: ./WD-BE
-    
-    - name: Run tests
-      run: npm test
-      working-directory: ./WD-BE
-      env:
-        NODE_ENV: test
-
-  deploy:
-    needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Deploy to Render
-      uses: johnbeynon/render-deploy-action@v0.0.8
-      with:
-        service-id: ${{ secrets.RENDER_SERVICE_ID }}
-        api-key: ${{ secrets.RENDER_API_KEY }}
-        clear-cache: true
-```
-
-3. **Set Up GitHub Secrets**:
-   - Go to your GitHub repository → Settings → Secrets and variables → Actions
-   - Add these secrets:
-     - `MONGODB_URI_TEST`: Your MongoDB test connection string
-     - `GOOGLE_CREDENTIALS_BASE64`: Your base64-encoded Google credentials
-     - `JWT_SECRET`: Your JWT secret
-     - `RENDER_SERVICE_ID`: Your Render service ID (from URL)
-     - `RENDER_API_KEY`: Your Render API key (from Account Settings)
-
-## Redis Configuration
-
-1. **Set Up Upstash Redis**:
-   - Sign up at [Upstash](https://upstash.com/)
-   - Create a new Redis database
-   - Get your Redis connection string
-
-2. **Add Redis URL to Environment Variables**:
-   - Add your Redis URL to Render environment variables
-   - Format: `redis://default:password@hostname:port`
-
-3. **Update Redis Configuration**:
-   - Make sure your Redis client initialization handles valid URLs:
-
-```javascript
-// Ensure URL has protocol
-const validateRedisUrl = (url) => {
-  if (!url) return null;
-  if (!url.startsWith('redis://') && !url.startsWith('rediss://')) {
-    return `redis://${url}`;
-  }
-  return url;
-};
-
-// Use validated URL
-const redisUrl = validateRedisUrl(ENV.REDIS_URL);
-```
-
-## Security Best Practices
-
-1. **Rotate Credentials Regularly**:
-   - Change your MongoDB password periodically
-   - Rotate your Google service account keys
-   - Update GitHub and Render secrets when credentials change
-
-2. **Use Separate Test Database**:
-   - Keep test data separate from production data
-   - Use a different database name for tests
-
-3. **Restrict Permissions**:
-   - Give service accounts only the permissions they need
-   - Use read-only access where possible
-
-4. **Environment Variables**:
-   - Never commit sensitive information to version control
-   - Use environment variables for all sensitive configuration
-
-5. **Monitor Logs**:
-   - Regularly check your application logs
-   - Set up alerts for unusual activity
-
-## Troubleshooting
-
-If you encounter issues:
-
-1. **Check Render Logs**:
-   - Go to your Render dashboard → Your service → Logs
-
-2. **Verify GitHub Actions**:
-   - Go to your GitHub repository → Actions tab
-
-3. **Database Connection**:
-   - Ensure MongoDB Atlas IP access list includes Render's IPs
-   - Verify credentials are correct
-
-4. **Redis Connection**:
-   - Ensure your Redis URL is correctly formatted
-   - Check that Upstash service is running
+FreeReads Berlin was developed by [Thiago Souza](https://github.com/mistersouza) as a portfolio project demonstrating full-stack development skills, API design, and community-focused application architecture.
