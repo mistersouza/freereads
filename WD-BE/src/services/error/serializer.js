@@ -1,5 +1,3 @@
-import { ENV } from '../../config/env.js';
-
 /**
 * Streamlines error objects for consistency
 *
@@ -8,7 +6,7 @@ import { ENV } from '../../config/env.js';
 * @returns {Object} Serialized error object
 */
 const serializeError = (error) => {
-  const logErrorStack = ENV.NODE_ENV === 'development';
+  const logErrorStack = process.env.NODE_ENV === 'development';
 
   return {
     statusCode: error.statusCode || error.status || 500,
@@ -19,7 +17,7 @@ const serializeError = (error) => {
     summary: error.summary ?? undefined,
     fields: error.fields ?? undefined,
     validation: error.errors ?? undefined,
-    ...(logErrorStack && { stack: error.stack })
+    ...(logErrorStack && { stack: error.stack }),
   };
 };
 
