@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { authorizeAccess } from '../middlewares/auth-middleware.js';
-import { 
-    getHubs,
-    getHub,
-    createHub,
-    updateHub,
-    deleteHub 
+import {
+  getHubs,
+  getHub,
+  createHub,
+  updateHub,
+  deleteHub,
 } from '../controllers/hub-controller.js';
 
 /**

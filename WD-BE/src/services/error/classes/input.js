@@ -1,4 +1,4 @@
-import { ApiError } from "./api.js";
+import { ApiError } from './api.js';
 
 /**
  * Input Validation Error - for request input validation failures
@@ -15,9 +15,9 @@ class InputValidationError extends ApiError {
     const {
       statusCode = 400,
       message = 'Input validation failed.',
-      fields = {}
+      fields = {},
     } = options;
-    
+
     super(statusCode, resourceName);
     this.name = 'InputValidationError';
     this.message = message;
@@ -26,15 +26,15 @@ class InputValidationError extends ApiError {
       domain: resourceName,
     };
     this.fields = fields;
-    
+
     if (Object.keys(fields).length) {
       this.summary = {
         fields: Object.keys(fields),
-        count: Object.keys(fields).length
+        count: Object.keys(fields).length,
       };
     }
   }
-  
+
   /**
    * Create an error for missing required fields
    * @param {string} resourceName - The resource being validated
@@ -44,10 +44,10 @@ class InputValidationError extends ApiError {
   static requiredField(resourceName, requiredFields) {
     return new InputValidationError(resourceName, {
       message: 'Required fields are missing.',
-      fields: requiredFields
+      fields: requiredFields,
     });
   }
-  
+
   /**
    * Create an error for invalid field formats
    * @param {string} resourceName - The resource being validated
@@ -57,7 +57,7 @@ class InputValidationError extends ApiError {
   static invalidFormat(resourceName, invalidFields) {
     return new InputValidationError(resourceName, {
       message: 'Invalid formats.',
-      fields: invalidFields
+      fields: invalidFields,
     });
   }
 }

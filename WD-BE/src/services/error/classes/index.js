@@ -4,8 +4,8 @@ import { InputValidationError } from './input.js';
 import { JwtError } from './jwt.js';
 
 export {
-    ApiError,
-    BusinessValidationError,
-    InputValidationError,
-    JwtError
+  ApiError,
+  BusinessValidationError,
+  InputValidationError,
+  JwtError,
 };

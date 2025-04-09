@@ -5,8 +5,7 @@ import { corsOptions } from './config/cors.js';
 import { swaggerDocs } from './config/swagger.js';
 import { ENV } from './config/env.js';
 
-import { log, handleError } from './services/error/index.js';
-import { DOMAIN_ERROR_MESSAGES } from './services/error/index.js';
+import { log, handleError, DOMAIN_ERROR_MESSAGES } from './services/error/index.js';
 
 import { bootstrapServices } from './init/index.js';
 
@@ -51,4 +50,3 @@ swaggerDocs(app);
 app.listen(ENV.PORT, () => {
   log.info(`🔓 Doors to the freereads are open on port ${ENV.PORT}`);
 });
-

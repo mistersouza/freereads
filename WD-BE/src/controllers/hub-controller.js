@@ -267,48 +267,50 @@
  */
 
 const getHubs = async (request, response, next) => {
-    try {
-        const hubs = await request.app.locals.services.hub.findAll();
-        response.status(200).json(hubs);
-    } catch (error) {
-        next(error);
-    }
+  try {
+    const hubs = await request.app.locals.services.hub.findAll();
+    response.status(200).json(hubs);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const getHub = async (request, response, next) => {
-    try {
-        const hub = await request.app.locals.services.hub.findById(request.params.id);
-        response.status(200).json(hub);
-    } catch (error) {
-        next(error);
-    }
+  try {
+    const hub = await request.app.locals.services.hub.findById(request.params.id);
+    response.status(200).json(hub);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const createHub = async (request, response, next) => {
-    try {
-        const hub = await request.app.locals.services.hub.createOne(request.body);
-        response.status(201).json(hub);
-    } catch (error) {
-        next(error);
-    }
+  try {
+    const hub = await request.app.locals.services.hub.createOne(request.body);
+    response.status(201).json(hub);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const updateHub = async (request, response, next) => {
-    try {
-        const hub = await request.app.locals.services.hub.updateOne(request.params.id, request.body);
-        response.status(200).json(hub);
-    } catch (error) {
-        next(error);
-    }
+  try {
+    const hub = await request.app.locals.services.hub.updateOne(request.params.id, request.body);
+    response.status(200).json(hub);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const deleteHub = async (request, response, next) => {
-    try {
-        await request.app.locals.services.hub.deleteOne(request.params.id);
-        response.status(204).end();
-    } catch (error) {
-        next(error);
-    }
-};  
+  try {
+    await request.app.locals.services.hub.deleteOne(request.params.id);
+    response.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};
 
-export { getHubs, getHub, createHub, updateHub, deleteHub };
+export {
+  getHubs, getHub, createHub, updateHub, deleteHub,
+};

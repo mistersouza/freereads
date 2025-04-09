@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import {
-    getBooks,
-    getBook,
-    updateOrInsertBook,
-    deleteBook,
+  getBooks,
+  getBook,
+  updateOrInsertBook,
+  deleteBook,
 } from '../controllers/book-controller.js';
 
 /**
@@ -15,11 +15,11 @@ import {
 const router = Router();
 
 router.route('/')
-    .get(getBooks)
-    .put(updateOrInsertBook);
+  .get(getBooks)
+  .put(updateOrInsertBook);
 
 router.route('/:id')
-    .get(getBook)
-    .delete(deleteBook);
+  .get(getBook)
+  .delete(deleteBook);
 
 export default router;

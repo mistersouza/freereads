@@ -2,17 +2,16 @@ import { validationResult } from 'express-validator';
 import { InputValidationError } from '../services/error/classes/index.js';
 import { getResourceName, getInputErrors } from '../services/error/utils.js';
 import { log } from '../services/error/index.js';
-import { 
+import {
   bookRules,
-  hubRules,
   scanRules,
   userRules,
-  tokenRules
+  tokenRules,
 } from '../validations/index.js';
 
 /**
  * A dynamic factory to validate user input with custom express-validator rules.
- * 
+ *
  * @param {Array} rules - An array of validation rules to be executed on the request
  * @returns {Function} Express middleware function
  */
@@ -25,30 +24,31 @@ const validate = (rules) => async (request, response, next) => {
       return next();
     }
 
-    const { 
-      requiredFields, 
-      isFieldError, 
-      formatErrors, 
-      isFormatError 
+    const {
+      requiredFields,
+      isFieldError,
+      formatErrors,
+      isFormatError,
     } = getInputErrors(errors.array());
-    
+
     if (isFieldError) {
       return next(InputValidationError.requiredField(
         getResourceName(request),
-        requiredFields
-      ));
-    }
-    
-    if (isFormatError) {
-      return next(InputValidationError.invalidFormat(
-        getResourceName(request),
-        formatErrors
+        requiredFields,
       ));
     }
 
+    if (isFormatError) {
+      return next(InputValidationError.invalidFormat(
+        getResourceName(request),
+        formatErrors,
+      ));
+    }
+
+    return next();
   } catch (error) {
     log.error(error);
-    next(error);
+    return next(error);
   }
 };
 
@@ -72,4 +72,6 @@ const validateScan = validate([scanRules.imageUrl, scanRules.isbn, scanRules.che
  */
 const validateBook = validate([bookRules.title, bookRules.author, bookRules.hubs]);
 
-export { validateMember, validateScan, validateBook, validateToken };
+export {
+  validateMember, validateScan, validateBook, validateToken,
+};

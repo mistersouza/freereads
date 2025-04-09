@@ -1,10 +1,9 @@
-import { ApiError } from "./api.js";
+import { ApiError } from './api.js';
 /**
  * Business Rule Breach – Validation Error
  * @extends ApiError
  */
 class BusinessValidationError extends ApiError {
-
   /**
    * @param {string} resourceName - The resource where the validation occurred
    * @param {Object} [options={}] - Configuration options
@@ -15,7 +14,7 @@ class BusinessValidationError extends ApiError {
   constructor(resourceName, options = {}) {
     const {
       statusCode = 400,
-      context = {}
+      context = {},
     } = options;
 
     super(statusCode, resourceName);
@@ -23,10 +22,10 @@ class BusinessValidationError extends ApiError {
     this.errorType = 'business';
     this.context = {
       domain: resourceName,
-      ...context
+      ...context,
     };
   }
-  
+
   /**
    * Permission Error
    * @param {string} resourceName - The resource being accessed
@@ -35,7 +34,7 @@ class BusinessValidationError extends ApiError {
   static forbidden(resourceName) {
     return new BusinessValidationError(resourceName, {
       statusCode: 403,
-      context: { issue: 'permission' }
+      context: { issue: 'permission' },
     });
   }
 
@@ -47,7 +46,7 @@ class BusinessValidationError extends ApiError {
   static conflict(resourceName) {
     return new BusinessValidationError(resourceName, {
       statusCode: 409,
-      context: { issue: 'conflict' }
+      context: { issue: 'conflict' },
     });
   }
 
@@ -59,22 +58,22 @@ class BusinessValidationError extends ApiError {
   static notFound(resourceName) {
     return new BusinessValidationError(resourceName, {
       statusCode: 404,
-      context: { issue: 'not_found' }
+      context: { issue: 'not_found' },
     });
   }
-  
+
   /**
    * Unauthorized error
    * @param {string} resourceName - The resource requiring authorization
    * @returns {BusinessValidationError} Error with 401 status code
    */
-  static unauthorized(resourceName, message) {
+  static unauthorized(resourceName) {
     return new BusinessValidationError(resourceName, {
       statusCode: 401,
-      context: { issue: 'authentication' }
+      context: { issue: 'authentication' },
     });
   }
-  
+
   /**
    * Unprocessable entity error
    * @param {string} resourceName - The resource that cannot be processed
@@ -83,7 +82,7 @@ class BusinessValidationError extends ApiError {
   static unprocessableEntity(resourceName) {
     return new BusinessValidationError(resourceName, {
       statusCode: 422,
-      context: { issue: 'unprocessable_entity' }
+      context: { issue: 'unprocessable_entity' },
     });
   }
 }

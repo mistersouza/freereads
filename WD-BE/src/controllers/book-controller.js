@@ -303,39 +303,41 @@
  */
 
 const getBooks = async (request, response, next) => {
-    try {
-        const books = await request.app.locals.services.book.findAll();
-        response.status(200).json(books);
-    } catch (error) {
-        next(error);
-    }
+  try {
+    const books = await request.app.locals.services.book.findAll();
+    response.status(200).json(books);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const getBook = async (request, response, next) => {
-    try {
-        const book = await request.app.locals.services.book.findById(request.params.id);
-        response.status(200).json(book);
-    } catch (error) {
-        next(error);
-    }
+  try {
+    const book = await request.app.locals.services.book.findById(request.params.id);
+    response.status(200).json(book);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const updateOrInsertBook = async (request, response, next) => {
-    try {
-        const book = await request.app.locals.services.book.updateOrInsert(request.body);
-        response.status(200).json(book);
-    } catch (error) {
-        next(error);
-    }
+  try {
+    const book = await request.app.locals.services.book.updateOrInsert(request.body);
+    response.status(200).json(book);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const deleteBook = async (request, response, next) => {
-    try {
-        await request.app.locals.services.book.delete(request.params.id);
-        response.status(204).end();
-    } catch (error) {
-        next(error);
-    }
+  try {
+    await request.app.locals.services.book.delete(request.params.id);
+    response.status(204).end();
+  } catch (error) {
+    next(error);
+  }
 };
 
-export { getBooks, getBook, updateOrInsertBook, deleteBook };
+export {
+  getBooks, getBook, updateOrInsertBook, deleteBook,
+};

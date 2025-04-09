@@ -1,4 +1,3 @@
-
 /**
  * @swagger
  * components:
@@ -111,7 +110,7 @@
  * /api/v1/users/{id}:
  *   get:
  *     summary: Get a user by ID
- *     description: Retrieve a single user by their ID. Users can access their own data, boss and overlord roles can access any user.
+ *     description: Get user by ID. Self-access allowed; boss/overlord roles can access any user.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -224,7 +223,7 @@
  * /api/v1/users/{id}:
  *   put:
  *     summary: Update a user
- *     description: Update an existing user. Users can update their own data, boss and overlord roles can update any user.
+ *     description: Update user. Self-edit allowed; boss/overlord can update any user.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -291,7 +290,7 @@
  * /api/v1/users/{id}:
  *   delete:
  *     summary: Delete a user
- *     description: Delete a user by ID. Users can delete their own account, boss and overlord roles can delete any user.
+ *     description: Delete user. Users delete self; boss/overlord can delete any user.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -313,7 +312,6 @@
  *         $ref: '#/components/responses/UserNotFoundError'
  */
 
-
 const getUsers = async (request, response, next) => {
   try {
     const users = await request.app.locals.services.user.findAll();
@@ -321,7 +319,7 @@ const getUsers = async (request, response, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
 
 const getUser = async (request, response, next) => {
   try {
@@ -330,7 +328,7 @@ const getUser = async (request, response, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
 
 const createUser = async (request, response, next) => {
   try {
@@ -339,7 +337,7 @@ const createUser = async (request, response, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
 
 const updateUser = async (request, response, next) => {
   try {
@@ -349,13 +347,13 @@ const updateUser = async (request, response, next) => {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     response.status(200).json(user);
   } catch (error) {
     next(error);
   }
-}
+};
 
 const deleteUser = async (request, response, next) => {
   try {
@@ -364,6 +362,8 @@ const deleteUser = async (request, response, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
 
-export { getUsers, getUser, createUser, updateUser, deleteUser };
+export {
+  getUsers, getUser, createUser, updateUser, deleteUser,
+};

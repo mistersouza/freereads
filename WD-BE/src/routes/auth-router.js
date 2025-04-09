@@ -1,5 +1,7 @@
 import { Router } from 'express';
-import { register, login, logout, refresh } from '../controllers/auth-controller.js';
+import {
+  register, login, logout, refresh,
+} from '../controllers/auth-controller.js';
 import { validateMember, validateToken } from '../middlewares/validate-middleware.js';
 
 /**

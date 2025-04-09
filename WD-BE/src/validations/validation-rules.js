@@ -1,6 +1,5 @@
 import { body } from 'express-validator';
 
-
 /**
  * Authentication field validation rules to keep things secure.
  */
@@ -8,19 +7,23 @@ const userRules = {
   email: body('email')
     .exists().withMessage('[REQUIRED] Drop your email to continue.')
     .bail()
-    .notEmpty().withMessage('[REQUIRED] Drop your email to continue.')
+    .notEmpty()
+    .withMessage('[REQUIRED] Drop your email to continue.')
     .bail()
-    .isEmail().withMessage('Oops! That email doesn\'t look right. Check it out.'),
-    
+    .isEmail()
+    .withMessage('Oops! That email doesn\'t look right. Check it out.'),
+
   password: body('password')
     .exists().withMessage('[REQUIRED] Type in a password to move forward.')
     .bail()
-    .notEmpty().withMessage('[REQUIRED] Type in a password to move forward.')
+    .notEmpty()
+    .withMessage('[REQUIRED] Type in a password to move forward.')
     .bail()
-    .isLength({ min: 8 }).withMessage('Security Check! Make it strong: 8+ chars, a mix of upper & lowercase, a number, and a special symbol')
+    .isLength({ min: 8 })
+    .withMessage('Security Check! Make it strong: 8+ chars, a mix of upper & lowercase, a number, and a special symbol')
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/)
     .withMessage('Security Check! Make it strong: 8+ chars, a mix of upper & lowercase, a number, and a special symbol'),
-    
+
   role: body('role')
     .optional()
     .isIn(['member', 'boss', 'overlord'])
@@ -29,7 +32,7 @@ const userRules = {
 
 /**
  * Rock-solid Hub form validation
- * 
+ *
  * Ensures that hub entries have a street and postcode.
  * @constant
  * @type {Object}
@@ -47,7 +50,7 @@ const hubRules = {
 
 /**
  * Sharp-eyed validation for flawless book entries
- * 
+ *
  * Ensures that book entries have a title, author, and are assigned to at least one hub.
  * @constant
  * @type {Object}
@@ -75,7 +78,7 @@ const bookRules = {
 
 /**
  * Seamless book recognition—powered by sharp validation
- * 
+ *
  * Defines express-validator rules for image URL and ISBN validation.
  * @type {Object} scanRules - Contains validation rules for book scanning inputs
  * @property {Function} imageUrl - Validates optional image URL
@@ -105,16 +108,20 @@ const scanRules = {
       throw new Error('No cover, no ISBN? Gotta give us something to work with!');
     }
     return true;
-  })
+  }),
 };
 
 const tokenRules = {
   refresh: body('refreshToken')
     .exists().withMessage('Missing refresh token.')
     .bail()
-    .isString().withMessage('Token gotta be a string.')
+    .isString()
+    .withMessage('Token gotta be a string.')
     .bail()
-    .isLength({ min: 1 }).withMessage('Token cannot be empty.')
+    .isLength({ min: 1 })
+    .withMessage('Token cannot be empty.'),
 };
 
-export { bookRules, hubRules, scanRules, userRules, tokenRules };
+export {
+  bookRules, hubRules, scanRules, userRules, tokenRules,
+};
