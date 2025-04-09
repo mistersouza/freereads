@@ -15,7 +15,7 @@ Our mission is to create a seamless platform where anyone in Berlin can discover
 
 ## 🏗 Architecture
 
-![FreeReads Architecture](https://res.cloudinary.com/dhlhrakma/image/upload/v1744051339/freereads/readme/freereads_architecture-diagram_pytuhq.png)
+![FreeReads Architecture](https://res.cloudinary.com/dhlhrakma/image/upload/v1744225616/freereads/readme/freereads_simplified-architecture-diagram_yinesn.png)
 
 FreeReads follows a modern, containerized microservices architecture optimized for scalability and performance:
 
