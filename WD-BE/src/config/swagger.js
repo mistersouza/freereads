@@ -6,24 +6,52 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'freereads API',
+      title: 'FreeReads API',
       version: '1.0.0',
-      description: 'API documentation',
+      description: 'API documentation for the FreeReads book sharing platform',
+      contact: {
+        name: 'API Support',
+        url: 'https://github.com/mistersouza/freereads/issues',
+      },
     },
     servers: [
       {
         url: ENV.NODE_ENV === 'production'
-          ? ENV.LIVE_SITE
-          : `http://localhost:${ENV.PORT || 5500}`,
+          ? 'https://freereads-reverse-proxy.onrender.com/api/v1'
+          : `http://localhost:${ENV.PORT}/api/v1`,
         description: ENV.NODE_ENV === 'production' ? 'Production server' : 'Development server',
+      },
+      {
+        url: ENV.NODE_ENV === 'production'
+          ? 'https://freereads-lof1.onrender.com/api/v1'
+          : `http://localhost:${ENV.PORT}/api/v1`,
+        description: ENV.NODE_ENV === 'production' ? 'Direct backend server' : 'Development server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
       },
     ],
     externalDocs: {
-      description: 'Find out more about Free Reads',
+      description: 'Find out more about FreeReads',
       url: 'https://github.com/mistersouza/freereads',
     },
   },
-  apis: ['./src/routes/*.js', './src/controllers/*.js', './src/models/*.js'],
+  apis: [
+    './src/routes/*.js',
+    './src/controllers/*.js',
+    './src/models/*.js',
+  ],
 };
 
 const specs = swaggerJsdoc(options);
@@ -33,12 +61,22 @@ const swaggerDocs = (app) => {
     swaggerOptions: {
       persistAuthorization: true,
       defaultModelsExpandDepth: -1,
+      tryItOutEnabled: true,
+      displayRequestDuration: true,
+      filter: true,
     },
     customCss: '.swagger-ui .topbar { background-color:rgb(50, 51, 53); } .swagger-ui .info .title { color: #3f51b5; } .swagger-ui .btn.execute { background-color: #4CAF50; }',
-    customSiteTitle: 'Free Reads API Documentation',
-    customfavIcon: 'https://example.com/favicon.ico',
+    customSiteTitle: 'FreeReads API Documentation',
   };
 
+  // Serve Swagger JSON
+  app.get('/api-docs.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.send(specs);
+  });
+
+  // Serve Swagger UI
   app.use('/', swaggerUi.serve, swaggerUi.setup(specs, uiOptions));
 };
 
