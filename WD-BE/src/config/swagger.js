@@ -11,20 +11,20 @@ const options = {
       description: 'API documentation for the FreeReads book sharing platform',
       contact: {
         name: 'API Support',
-        url: 'https://github.com/mistersouza/freereads/issues',
+        url: 'https://github.com/mistersouza/freereads',
       },
     },
     servers: [
       {
         url: ENV.NODE_ENV === 'production'
-          ? 'https://freereads-reverse-proxy.onrender.com/api/v1'
-          : `http://localhost:${ENV.PORT}/api/v1`,
+          ? 'https://freereads-reverse-proxy.onrender.com'
+          : `http://localhost:${ENV.PORT}`,
         description: ENV.NODE_ENV === 'production' ? 'Production server' : 'Development server',
       },
       {
         url: ENV.NODE_ENV === 'production'
-          ? 'https://freereads-lof1.onrender.com/api/v1'
-          : `http://localhost:${ENV.PORT}/api/v1`,
+          ? 'https://freereads-lof1.onrender.com'
+          : `http://localhost:${ENV.PORT}`,
         description: ENV.NODE_ENV === 'production' ? 'Direct backend server' : 'Development server',
       },
     ],
@@ -70,10 +70,10 @@ const swaggerDocs = (app) => {
   };
 
   // Serve Swagger JSON
-  app.get('/api-docs.json', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.send(specs);
+  app.get('/api-docs.json', (request, response) => {
+    response.setHeader('Content-Type', 'application/json');
+    response.setHeader('Access-Control-Allow-Origin', '*');
+    response.send(specs);
   });
 
   // Serve Swagger UI
