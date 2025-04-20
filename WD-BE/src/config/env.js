@@ -30,6 +30,7 @@ export const ENV = {
   // CORS
   CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
   // Authentication
+  JWT_PREFIX: process.env.JWT_PREFIX || 'jwt',
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
   JWT_ACCESS_EXPIRES_IN: parseInt(process.env.JWT_ACCESS_EXPIRES_IN, 10) || 15 * 60,

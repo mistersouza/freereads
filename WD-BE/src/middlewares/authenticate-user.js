@@ -2,36 +2,37 @@ import { JwtError } from '../services/error/classes/index.js';
 
 /**
  * JWT-powered authentication
- * 
+ *
  * @param {boolean} authenticate - Whether authentication is required
  */
 const authenticateUser = (authenticate) => async (request, response, next) => {
-    const token = request.app.locals.services.jwt
-        .extractToken(request.headers.authorization);
+  const token = request.app.locals.services.jwt
+    .extractToken(request.headers.authorization);
 
-    if (!token) {
-        return authenticate 
-            ? next(JwtError.missing()) 
-            : next();
-    }
+  if (!token) {
+    return authenticate
+      ? next(JwtError.missing())
+      : next();
+  }
+
+  try {
+    const payload = request.app.locals.services.jwt
+      .verifyToken(token, 'access');
 
     const isTokenBlacklisted = await request.app.locals.services.blacklist
-        .isTokenBlacklisted(token);
-    
+      .isTokenBlacklisted(payload);
+
     if (isTokenBlacklisted) {
-        return next(JwtError.blacklisted());
+      return next(JwtError.blacklisted());
     }
 
-    try {
-        request.user = request.app.locals.services.jwt
-            .verifyToken(token, 'access');
-            
-        next();
-    } catch (error) {
-        return authenticate 
-            ? next(error.expiredAt ? JwtError.expired() : JwtError.invalid())
-            : next();
-    }
+    request.user = payload;
+    return next();
+  } catch (error) {
+    return authenticate
+      ? next(error)
+      : next();
+  }
 };
 
 const loadAuthenticatedUser = authenticateUser(true);

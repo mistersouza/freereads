@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
 import User from '../models/user-model.js';
-import { getResourceName } from '../services/error/index.js';
-import { BusinessValidationError, JwtError, ApiError } from '../services/error/classes/index.js';
-import { log } from '../services/error/index.js';
+import { getResourceName, log } from '../services/error/index.js';
+import { BusinessValidationError, JwtError } from '../services/error/classes/index.js';
 import { ENV } from '../config/env.js';
 
 /**
@@ -61,7 +60,7 @@ import { ENV } from '../config/env.js';
  *           type: string
  *           format: date-time
  *           description: When the error occurred
- *   
+ *
  *     ValidationError:
  *       allOf:
  *         - $ref: '#/components/schemas/ErrorResponse'
@@ -78,7 +77,7 @@ import { ENV } from '../config/env.js';
  *               example:
  *                 email: "Email format is invalid"
  *                 password: "Password must be at least 6 characters"
- *   
+ *
  *     BusinessError:
  *       allOf:
  *         - $ref: '#/components/schemas/ErrorResponse'
@@ -95,7 +94,7 @@ import { ENV } from '../config/env.js';
  *                   example: "auth"
  *                 issue:
  *                   example: "not_found"
- *   
+ *
  *     JwtError:
  *       allOf:
  *         - $ref: '#/components/schemas/ErrorResponse'
@@ -108,7 +107,7 @@ import { ENV } from '../config/env.js';
  *               example: "expired"
  *             statusCode:
  *               example: 401
- *   
+ *
  *   securitySchemes:
  *     bearerAuth:
  *       type: http
@@ -190,7 +189,7 @@ import { ENV } from '../config/env.js';
 
 /**
  * Sign up a new user with email, password, and role.
- * 
+ *
  * @param {Object} request - Express request object containing user registration details
  * @param {Object} response - Express response object for sending registration result
  * @param {Function} next - Express next middleware function for error handling
@@ -198,38 +197,38 @@ import { ENV } from '../config/env.js';
  * @returns {Object} User registration response with JWT token and user details
  */
 const register = async (request, response, next) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-    try {
-        const { email, password, role } = request.body;
+  try {
+    const { email, password, role } = request.body;
 
-        const activeAccount = await User.findOne({ email });
-        if (activeAccount) {
-            throw BusinessValidationError.conflict(getResourceName(request));
-        }
-
-        const [ user ] = await User.create(
-            [{ email, hashedPassword: password, role }],
-            { session }
-        );
-
-        const { accessToken, refreshToken } = await request.app.locals.services.jwt
-            .issueTokenPair(user);
-        
-        await session.commitTransaction();
-        session.endSession();
-
-        response.status(201).json({
-            tokens: { accessToken, refreshToken },
-            user: { email: user.email, role: user.role }
-        });
-    } catch (error) {
-        log.error(error);
-        if (session.inTransaction()) session.abortTransaction();
-        session.endSession();
-        next(error);
+    const activeAccount = await User.findOne({ email });
+    if (activeAccount) {
+      throw BusinessValidationError.conflict(getResourceName(request));
     }
+
+    const [user] = await User.create(
+      [{ email, hashedPassword: password, role }],
+      { session },
+    );
+
+    const { accessToken, refreshToken } = await request.app.locals.services.jwt
+      .issueTokenPair(user);
+
+    await session.commitTransaction();
+    session.endSession();
+
+    response.status(201).json({
+      tokens: { accessToken, refreshToken },
+      user: { email: user.email, role: user.role },
+    });
+  } catch (error) {
+    log.error(error);
+    if (session.inTransaction()) session.abortTransaction();
+    session.endSession();
+    next(error);
+  }
 };
 
 /**
@@ -302,38 +301,36 @@ const register = async (request, response, next) => {
 
 /**
  * Log in a user with their email and password.
- * 
+ *
  * @param {Object} request - Express request object containing user credentials
  * @param {Object} response - Express response object
  * @param {Function} next - Express next middleware function
- * @returns {Object|void} JSON response with user token and details or passes error to next middleware
+ * @returns {Object|void} User token/details JSON or error via next()
  */
 const login = async (request, response, next) => {
-    const { email, password } = request.body;
+  const { email, password } = request.body;
 
-    try {
-        const user = await User.findOne({ email }).select('+hashedPassword');
-        if (!user) {
-            throw BusinessValidationError.notFound(getResourceName(request));
-        }
-
-        if (!await user.comparePassword(password)) {
-            await request.app.locals.services.blacklist
-                .recordFailedLogin(request.ip);
-            throw BusinessValidationError
-                .unauthorized(getResourceName(request));
-        }
-        
-        const { accessToken, refreshToken } = await request.app.locals.services.jwt
-            .issueTokenPair(user);
-
-        response.status(200).json({
-            tokens: { accessToken, refreshToken },
-            user: { email, role: user.role }
-        });
-    } catch (error) {
-        next(error);
+  try {
+    const user = await User.findOne({ email }).select('+hashedPassword');
+    if (!user) {
+      return next(BusinessValidationError.notFound(getResourceName(request)));
     }
+
+    if (!await user.comparePassword(password)) {
+      await request.app.locals.services.blacklist.recordFailedLogin(request.ip);
+      return next(BusinessValidationError.unauthorized(getResourceName(request)));
+    }
+
+    const { accessToken, refreshToken } = await request.app.locals.services.jwt
+      .issueTokenPair(user);
+
+    return response.status(200).json({
+      tokens: { accessToken, refreshToken },
+      user: { email, role: user.role },
+    });
+  } catch (error) {
+    return next(error);
+  }
 };
 
 /**
@@ -374,40 +371,40 @@ const login = async (request, response, next) => {
 
 /**
  * Log out user by blacklisting the JWT token
- * 
+ *
  * @param {Object} request - Express request object
  * @param {Object} response - Express response object
  * @param {Function} next - Express next middleware function
  * @returns {Object|void} JSON response or passes control to next middleware
  */
-const logout = async (request, response, next) => {
-    const { refreshToken } = request.body;
-    if (!refreshToken) {
-        return response.status(200).json({
-            message: 'Sign in when you’re ready.'
-        });
+const logout = async (request, response) => {
+  const { refreshToken } = request.body;
+  if (!refreshToken) {
+    return response.status(200).json({
+      message: 'Sign in when you’re ready.',
+    });
+  }
+
+  try {
+    const payload = request.app.locals.services.jwt
+      .verifyToken(refreshToken, 'refresh');
+
+    const { status, message } = await request.app.locals.services.blacklist
+      .blacklistToken(payload);
+    if (status === 'failed') {
+      log.warn(`${ENV.BLACKLIST_PREFIX}:${payload.jti} - ${message}`);
+      // TODO: Make the call — fail loud or let it slide? Review expected behavior.
     }
 
-    try {
-        const payload = request.app.locals.services.jwt
-            .verifyToken(refreshToken, 'refresh');
-        
-        const { status, message } = await request.app.locals.services.blacklist
-            .blacklistToken(payload);
-        if (status === 'failed') {
-            log.warn(`${ENV.JWT_PREFIX}:${payload.jti} - ${message}` );
-            // TODO: Make the call — fail loud or let it slide? Review expected behavior.
-        }
-
-        return response.status(200).json({
-            message: 'You’re out! See you again soon.'
-        });
-    } catch (error) {
-        log.error(error);
-        return response.status(200).json({
-            message: 'Session over. Please log back in.'
-        });
-    }; 
+    return response.status(200).json({
+      message: 'You\'re out! See you again soon.',
+    });
+  } catch (error) {
+    log.error(error);
+    return response.status(200).json({
+      message: 'Session over. Please log back in.',
+    });
+  }
 };
 
 /**
@@ -460,7 +457,7 @@ const logout = async (request, response, next) => {
 
 /**
  * Revives an access token using the provided refresh token.
- * 
+ *
  * @param {Object} request - Express request object containing refresh token in body
  * @param {Object} response - Express response object
  * @param {Function} next - Express next middleware function for error handling
@@ -468,35 +465,37 @@ const logout = async (request, response, next) => {
  * @throws {JwtError} If refresh token is missing or invalid
  */
 const refresh = async (request, response, next) => {
-    const { refreshToken: token } = request.body;
+  const { refreshToken: token } = request.body;
 
-    try {
-        if (!token) throw JwtError.missing();
+  try {
+    if (!token) throw JwtError.missing();
 
-        const payload = request.app.locals.services.jwt
-            .verifyToken(token, 'refresh');
+    const payload = request.app.locals.services.jwt
+      .verifyToken(token, 'refresh');
 
-        const isTokenBlacklisted = await request.app.locals.services.blacklist
-            .isTokenBlacklisted(payload);
+    const isTokenBlacklisted = await request.app.locals.services.blacklist
+      .isTokenBlacklisted(payload);
 
-        if (isTokenBlacklisted) throw JwtError.blacklisted();
+    if (isTokenBlacklisted) throw JwtError.blacklisted();
 
-        const { status, message } = await request.app.locals.services.blacklist
-            .blacklistToken(payload);
-        if (status === 'failed') {
-            log.warn(`${ENV.BLACKLIST_PREFIX}:${payload.jti} - ${message}`);
-            // TODO: Make the call — fail loud or let it slide? Review expected behavior.
-        }
-
-        const { accessToken, refreshToken } = await request.app.locals.services.jwt
-            .refreshAccessToken(token);
-
-        return response.status(200).json({
-            tokens: { accessToken, refreshToken },
-         });
-    } catch (error) {
-        next(error);
+    const { status, message } = await request.app.locals.services.blacklist
+      .blacklistToken(payload);
+    if (status === 'failed') {
+      log.warn(`${ENV.BLACKLIST_PREFIX}:${payload.jti} - ${message}`);
+      // TODO: Make the call — fail loud or let it slide? Review expected behavior.
     }
-}
 
-export { register, login, logout, refresh };
+    const { accessToken, refreshToken } = await request.app.locals.services.jwt
+      .refreshAccessToken(token);
+
+    response.status(200).json({
+      tokens: { accessToken, refreshToken },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  register, login, logout, refresh,
+};
