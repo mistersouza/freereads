@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 /**
  * @swagger
@@ -19,7 +19,7 @@ import bcrypt from "bcryptjs";
  *           unique: true
  *         hashedPassword:
  *           type: string
- *           description: Hashed version of user's password (never returned in responses due to select:false)
+ *           description: Hashed user password (never returned in responses due to select:false)
  *         role:
  *           type: string
  *           enum: [member, boss, overlord]
@@ -47,9 +47,9 @@ import bcrypt from "bcryptjs";
  *         updatedAt: "2023-01-01T00:00:00.000Z"
  *       description: |
  *         User model with automatic password hashing on save.
- *         The model includes a comparePassword method that securely compares an unhashed password 
+ *         The model includes a comparePassword method that securely compares an unhashed password
  *         with the stored hashed password using bcrypt.
- *         
+ *
  *         Notes:
  *         - Password hashing uses bcrypt with 12 salt rounds
  *         - hashedPassword is never returned in query results (select:false)
@@ -67,7 +67,7 @@ const userSchema = new mongoose.Schema({
   },
   hashedPassword: {
     type: String,
-    select: false
+    select: false,
   },
   role: {
     type: String,
@@ -86,17 +86,18 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {
-    if (!this.isModified('hashedPassword')) return next();
-    try {
-        const salt = await bcrypt.genSalt(12);
-        this.hashedPassword = await bcrypt.hash(this.hashedPassword, salt);
-    } catch (error) {
-        next(error);
-    }
+  if (!this.isModified('hashedPassword')) return next();
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.hashedPassword = await bcrypt.hash(this.hashedPassword, salt);
+    return next();
+  } catch (error) {
+    return next(error);
+  }
 });
 
 userSchema.methods.comparePassword = async function (password) {
-    return await bcrypt.compare(password, this.hashedPassword);
-}
+  return bcrypt.compare(password, this.hashedPassword);
+};
 
 export default mongoose.model('User', userSchema);

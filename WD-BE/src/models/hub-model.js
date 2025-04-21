@@ -75,17 +75,17 @@ const hubSchema = new mongoose.Schema({
     type: {
       type: String,
       enum: ['Point'],
-      default: 'Point'
+      default: 'Point',
     },
     coordinates: {
-      type: [Number], 
-      default: [0, 0]
-    }
+      type: [Number],
+      default: [0, 0],
+    },
   },
   books: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Book', 
+      ref: 'Book',
     },
   ],
   hasBooks: {
@@ -100,11 +100,11 @@ hubSchema.index({ geoLocation: '2dsphere' });
 
 hubSchema.pre('save', function (next) {
   const hub = this;
-  if (!hub.isModified('books')) {   
+  if (!hub.isModified('books')) {
     return next();
   }
   hub.hasBooks = hub.books.length > 0;
-  next();
+  return next();
 });
 
 hubSchema.pre('save', async function (next) {
@@ -123,23 +123,23 @@ hubSchema.pre('save', async function (next) {
         headers: {
           'User-Agent': 'WD-BE',
         },
-      }
+      },
     );
 
     if (!response.ok) {
       throw new Error('Unable to fetch data from OpenStreetMap');
     }
-    
+
     const data = await response.json();
     if (!data.length) {
       throw new Error('No data found for the given address');
     }
     const { lat, lon } = data[0];
     hub.geoLocation.coordinates = [parseFloat(lon), parseFloat(lat)];
-    
-    next();
+
+    return next();
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 

@@ -61,58 +61,58 @@ import mongoose from 'mongoose';
  */
 
 const bookSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: [true, "Title is required"],
-        trim: true,
+  title: {
+    type: String,
+    required: [true, 'Title is required'],
+    trim: true,
+  },
+  author: {
+    type: String,
+    required: [true, 'Author is required'],
+    trim: true,
+  },
+  releaseYear: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: new Date().getFullYear(),
+  },
+  genre: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  isbn: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  description: {
+    type: String,
+    trim: true,
+  },
+  copies: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  isAvailable: {
+    type: Boolean,
+    default: true,
+  },
+  thumbnail: {
+    type: String,
+    trim: true,
+  },
+  hubs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Hub',
+      required: [true, 'Hub is required'],
     },
-    author: {
-        type: String,
-        required: [true, "Author is required"],
-        trim: true,
-    },
-    releaseYear: {
-        type: Number,
-        required: true,
-        min: 0,
-        max: new Date().getFullYear(),
-    },
-    genre: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    isbn: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    description: {
-        type: String,
-        trim: true,
-    },
-    copies: {
-        type: Number,
-        required: true,
-        min: 0,
-    },
-    isAvailable: {
-        type: Boolean,
-        default: true,
-    },
-    thumbnail: {
-        type: String,
-        trim: true,
-    },
-    hubs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Hub',
-            required: [true, 'Hub is required'],
-        }
-    ]
+  ],
 }, {
-    timestamps: true,
+  timestamps: true,
 });
 
 /**
@@ -135,12 +135,12 @@ const bookSchema = new mongoose.Schema({
  * Sets isAvailable to true if copies > 0, otherwise false
  */
 bookSchema.pre('save', async function (next) {
-    const book = this;
-    
-    if (!book.isModified('copies')) return next();
-    book.isAvailable = this.copies > 0;
-    
-    next();
+  const book = this;
+
+  if (!book.isModified('copies')) return next();
+  book.isAvailable = this.copies > 0;
+
+  return next();
 });
 
 export default mongoose.model('Book', bookSchema);
