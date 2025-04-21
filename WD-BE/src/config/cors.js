@@ -1,9 +1,9 @@
 import { ENV } from './env.js';
 
 const developmentOrigins = [
-  'http://localhost:3000', // Frontend development server
-  'http://localhost:5500', // Backend development server
-  'http://127.0.0.1:5500', // Alternative localhost
+  'http://localhost:3000',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
 ];
 
 const productionOrigins = [
@@ -27,9 +27,15 @@ export const corsOptions = {
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Content-Length', 'X-Rate-Limit'],
+  exposedHeaders: [
+    'Content-Length',
+    'RateLimit-Limit',
+    'RateLimit-Remaining',
+    'RateLimit-Reset',
+    'X-Rate-Limit',
+  ],
   credentials: true,
-  maxAge: 86400, // 24 hours
+  maxAge: 86400,
   preflightContinue: false,
   optionsSuccessStatus: 204,
 };
