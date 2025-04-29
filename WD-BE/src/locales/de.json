@@ -1,0 +1,11 @@
+{
+  "Input validation failed.": "Eingabeüberprüfung fehlgeschlagen.",
+  "Required fields are missing.": "Erforderliche Felder fehlen.",
+  "Invalid formats.": "Ungültige Formate.",
+  
+  "Drop your email to continue.": "Hey! Trag noch schnell deine E-Mail ein, dann geht’s weiter.",
+  "Oops! That email doesn't look right. Check it out.": "Uups! Die E-Mail sieht irgendwie falsch aus. Schau nochmal drüber.",
+  
+  "Type in a password to move forward.": "Gib ein Passwort ein, um weiterzumachen.",
+  "Security Check! Make it strong: 8+ chars, a mix of upper & lowercase, a number, and a special symbol": "Sicherheitscheck! Dein Passwort sollte stark sein: mindestens 8 Zeichen, Groß- und Kleinbuchstaben, eine Zahl und ein Sonderzeichen."
+}

@@ -17,6 +17,7 @@ import hubRouter from './routes/hub-router.js';
 
 import { limitTraffic } from './middlewares/limit-middleware.js';
 import { throttleBlacklist } from './middlewares/blacklist-middleware.js';
+import { setLingo } from './middlewares/lingo-middleware.js';
 
 const app = express();
 // Enable CORS
@@ -31,6 +32,8 @@ const services = await bootstrapServices();
 // Expose services to routes
 app.locals.services = services;
 
+// Set locale
+app.use(setLingo);
 // Apply blacklisting
 app.use(throttleBlacklist);
 // Apply limiting
