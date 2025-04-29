@@ -1,4 +1,5 @@
 import { ApiError } from './api.js';
+import { lingo } from '../../lingo/index.js';
 
 /**
  * Input Validation Error - for request input validation failures
@@ -15,17 +16,18 @@ class InputValidationError extends ApiError {
     const {
       statusCode = 400,
       message = 'Input validation failed.',
+      locale = 'en',
       fields = {},
     } = options;
 
     super(statusCode, resourceName);
     this.name = 'InputValidationError';
-    this.message = message;
+    this.message = lingo.translateMessage(message, locale);
     this.errorType = 'validation';
     this.context = {
       domain: resourceName,
     };
-    this.fields = fields;
+    this.fields = lingo.translateFieldMessages(fields, locale);
 
     if (Object.keys(fields).length) {
       this.summary = {
@@ -41,9 +43,10 @@ class InputValidationError extends ApiError {
    * @param {string[]} missingFields - Array of missing field names
    * @returns {InputValidationError} Validation error with fields populated
    */
-  static requiredField(resourceName, requiredFields) {
+  static requiredField(resourceName, locale, requiredFields) {
     return new InputValidationError(resourceName, {
       message: 'Required fields are missing.',
+      locale,
       fields: requiredFields,
     });
   }
@@ -54,9 +57,10 @@ class InputValidationError extends ApiError {
    * @param {Object} invalidFields - Object mapping field names to error messages
    * @returns {InputValidationError} Validation error with fields populated
    */
-  static invalidFormat(resourceName, invalidFields) {
+  static invalidFormat(resourceName, locale, invalidFields) {
     return new InputValidationError(resourceName, {
       message: 'Invalid formats.',
+      locale,
       fields: invalidFields,
     });
   }

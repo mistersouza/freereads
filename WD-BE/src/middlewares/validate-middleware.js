@@ -34,6 +34,7 @@ const validate = (rules) => async (request, response, next) => {
     if (isFieldError) {
       return next(InputValidationError.requiredField(
         getResourceName(request),
+        request.locale,
         requiredFields,
       ));
     }
@@ -41,6 +42,7 @@ const validate = (rules) => async (request, response, next) => {
     if (isFormatError) {
       return next(InputValidationError.invalidFormat(
         getResourceName(request),
+        request.locale,
         formatErrors,
       ));
     }
